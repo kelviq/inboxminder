@@ -1,0 +1,11 @@
+allowBuilds:
+  # native binding — required at runtime
+  better-sqlite3: true
+  # these ship platform binaries as optional deps; their build scripts are unneeded
+  '@biomejs/biome': false
+  esbuild: false
+
+# one auth-lib copy tree-wide: googleapis-common resolves its own otherwise,
+# and the two nominal OAuth2Client types don't unify for tsc
+overrides:
+  google-auth-library: ^10.9.1
