@@ -136,6 +136,14 @@ enabled = true
 archive = []                      # e.g. ["newsletter", "marketing"] — opt-in
 coldOutreachHint = ""
 
+[triage.labels]                   # every label name is yours to change
+newsletter = "InboxMinder/Newsletter"
+notification = "InboxMinder/Notification"
+marketing = "InboxMinder/Marketing"
+"cold-outreach" = "InboxMinder/Cold Outreach"
+fyi = "InboxMinder/FYI"
+important = "InboxMinder/Important"
+
 [labels]
 enabled = true
 pending = "InboxMinder/Pending"

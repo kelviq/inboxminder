@@ -103,6 +103,19 @@ struct PreferencesView: View {
                     .textFieldStyle(.roundedBorder)
                 }
                 .disabled(!store.doc.triage.enabled)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Label names (a / nests them in Gmail's sidebar)")
+                        .font(.caption).foregroundColor(.secondary)
+                    labelField("Newsletters", $store.doc.triage.labels.newsletter)
+                    labelField(
+                        "Notifications", $store.doc.triage.labels.notification)
+                    labelField("Marketing", $store.doc.triage.labels.marketing)
+                    labelField(
+                        "Cold outreach", $store.doc.triage.labels.coldOutreach)
+                    labelField("FYI", $store.doc.triage.labels.fyi)
+                    labelField("Important", $store.doc.triage.labels.important)
+                }
+                .disabled(!store.doc.triage.enabled)
             }
             Section("Reply tracking") {
                 Toggle(
@@ -178,6 +191,16 @@ struct PreferencesView: View {
         }
         .formStyle(.grouped)
         .padding(.horizontal, -16)
+    }
+
+    private func labelField(_ title: String, _ binding: Binding<String>)
+        -> some View
+    {
+        HStack {
+            Text(title).frame(width: 110, alignment: .leading)
+                .font(.caption)
+            TextField(title, text: binding).textFieldStyle(.roundedBorder)
+        }
     }
 
     private var footer: some View {

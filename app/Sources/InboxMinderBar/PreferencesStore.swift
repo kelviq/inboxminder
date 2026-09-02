@@ -27,7 +27,15 @@ final class PreferencesStore: ObservableObject {
         email: .init(
             pollIntervalSec: 45, notifications: true,
             skipSenders: ["mailer-daemon"]),
-        triage: .init(enabled: true, archive: [], coldOutreachHint: ""),
+        triage: .init(
+            enabled: true, archive: [], coldOutreachHint: "",
+            labels: .init(
+                newsletter: "InboxMinder/Newsletter",
+                notification: "InboxMinder/Notification",
+                marketing: "InboxMinder/Marketing",
+                coldOutreach: "InboxMinder/Cold Outreach",
+                fyi: "InboxMinder/FYI",
+                important: "InboxMinder/Important")),
         labels: .init(
             enabled: true, pending: "InboxMinder/Pending",
             resolved: "InboxMinder/Resolved"),

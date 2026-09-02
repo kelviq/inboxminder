@@ -94,17 +94,6 @@ export function toAddresses(header: string): string[] {
   );
 }
 
-/** Fixed category -> label map (names not configurable in v1). */
-export const TRIAGE_LABELS: Record<TriageCategory, string> = {
-  newsletter: "InboxMinder/Newsletter",
-  notification: "InboxMinder/Notification",
-  marketing: "InboxMinder/Marketing",
-  "cold-outreach": "InboxMinder/Cold Outreach",
-  fyi: "InboxMinder/FYI",
-};
-
-export const IMPORTANT_LABEL = "InboxMinder/Important";
-
 /**
  * Known-correspondent guard: can this sender NOT be a stranger? Two cheap
  * signals, each erring toward suppression (a missed Cold Outreach label is
@@ -154,7 +143,7 @@ async function applyTriageCategory(
   try {
     await mail.setThreadLabels?.(
       msg.threadId,
-      [TRIAGE_LABELS[category]],
+      [cfg.triage.labels[category]],
       archive ? ["INBOX"] : [],
     );
     log.info(
@@ -312,7 +301,11 @@ export async function runWatchTick(cfg: Config): Promise<boolean> {
         // and its own importance markers/stars carry user/Google
         // semantics this tool must not fight.
         try {
-          await mail.setThreadLabels?.(msg.threadId, [IMPORTANT_LABEL], []);
+          await mail.setThreadLabels?.(
+            msg.threadId,
+            [cfg.triage.labels.important],
+            [],
+          );
           recordActivity("important", {
             subject: msg.subject,
             threadId: msg.threadId,

@@ -11,7 +11,14 @@ final class PreferencesTests: XCTestCase {
                 skipSenders: ["mailer-daemon"]),
             triage: .init(
                 enabled: true, archive: ["newsletter"],
-                coldOutreachHint: "friends are warm"),
+                coldOutreachHint: "friends are warm",
+                labels: .init(
+                    newsletter: "InboxMinder/Newsletter",
+                    notification: "InboxMinder/Notification",
+                    marketing: "InboxMinder/Marketing",
+                    coldOutreach: "Minder/Cold",
+                    fyi: "InboxMinder/FYI",
+                    important: "InboxMinder/Important")),
             labels: .init(
                 enabled: true, pending: "InboxMinder/Pending",
                 resolved: "InboxMinder/Resolved"),
@@ -37,7 +44,13 @@ final class PreferencesTests: XCTestCase {
                 + "\"provider\":\"anthropic\"},"
                 + "\"triage\":{\"archive\":[\"newsletter\"],"
                 + "\"coldOutreachHint\":\"friends are warm\","
-                + "\"enabled\":true}}")
+                + "\"enabled\":true,"
+                + "\"labels\":{\"cold-outreach\":\"Minder/Cold\","
+                + "\"fyi\":\"InboxMinder/FYI\","
+                + "\"important\":\"InboxMinder/Important\","
+                + "\"marketing\":\"InboxMinder/Marketing\","
+                + "\"newsletter\":\"InboxMinder/Newsletter\","
+                + "\"notification\":\"InboxMinder/Notification\"}}}")
     }
 
     func testDecodeRoundTrip() {
@@ -54,7 +67,9 @@ final class PreferencesTests: XCTestCase {
             Data("""
                 {"llm":{"provider":"openai","model":"gpt-5"},
                  "email":{"pollIntervalSec":45,"notifications":false,"skipSenders":[]},
-                 "triage":{"enabled":true,"archive":[],"coldOutreachHint":""},
+                 "triage":{"enabled":true,"archive":[],"coldOutreachHint":"",
+                  "labels":{"newsletter":"N","notification":"O","marketing":"M",
+                   "cold-outreach":"C","fyi":"F","important":"I"}},
                  "labels":{"enabled":true,"pending":"P","resolved":"R"},
                  "instructions":{"rules":[{"match":"a@b.c","note":"n"}]}}
                 """.utf8))

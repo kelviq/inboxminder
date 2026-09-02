@@ -78,6 +78,14 @@ describe("[triage] config", () => {
       enabled: true,
       archive: [],
       coldOutreachHint: "",
+      labels: {
+        newsletter: "InboxMinder/Newsletter",
+        notification: "InboxMinder/Notification",
+        marketing: "InboxMinder/Marketing",
+        "cold-outreach": "InboxMinder/Cold Outreach",
+        fyi: "InboxMinder/FYI",
+        important: "InboxMinder/Important",
+      },
     });
   });
 
@@ -92,6 +100,16 @@ describe("[triage] config", () => {
     expect(() =>
       ConfigSchema.parse({ triage: { archive: ["important"] } }),
     ).toThrow();
+  });
+
+  it("custom label names flow through to Gmail", async () => {
+    pollMailHistory.mockResolvedValue({ inboxIds: ["twc"], sentIds: [] });
+    getMessage.mockResolvedValue(inbound("twc", "t-twc"));
+    verdict({ category: "newsletter" });
+    await watcher.runWatchTick(
+      cfgWith({ triage: { labels: { newsletter: "News/Weekly" } } }),
+    );
+    expect(setThreadLabels).toHaveBeenCalledWith("t-twc", ["News/Weekly"], []);
   });
 });
 

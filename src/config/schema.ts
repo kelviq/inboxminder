@@ -54,6 +54,21 @@ export const ConfigSchema = z.object({
       // Free text appended to the cold-outreach criteria in the classify
       // prompt (e.g. what counts as a warm intro in your world).
       coldOutreachHint: z.string().max(500).default(""),
+      // Label names per category (a "/" nests them in Gmail's sidebar).
+      // TOML note: the hyphenated key needs quotes — "cold-outreach" = "…".
+      labels: z
+        .object({
+          newsletter: z.string().min(1).default("InboxMinder/Newsletter"),
+          notification: z.string().min(1).default("InboxMinder/Notification"),
+          marketing: z.string().min(1).default("InboxMinder/Marketing"),
+          "cold-outreach": z
+            .string()
+            .min(1)
+            .default("InboxMinder/Cold Outreach"),
+          fyi: z.string().min(1).default("InboxMinder/FYI"),
+          important: z.string().min(1).default("InboxMinder/Important"),
+        })
+        .prefault({}),
     })
     .prefault({}),
   // Thread-state labels: Pending when a reply-worthy email arrives,

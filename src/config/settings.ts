@@ -31,6 +31,14 @@ export const SettingsSchema = z.object({
     enabled: z.boolean(),
     archive: z.array(z.enum(TRIAGE_CATEGORIES)),
     coldOutreachHint: z.string().max(500),
+    labels: z.object({
+      newsletter: z.string().min(1),
+      notification: z.string().min(1),
+      marketing: z.string().min(1),
+      "cold-outreach": z.string().min(1),
+      fyi: z.string().min(1),
+      important: z.string().min(1),
+    }),
   }),
   labels: z.object({
     enabled: z.boolean(),
@@ -62,6 +70,7 @@ export function settingsFromConfig(cfg: Config): SettingsDoc {
       enabled: cfg.triage.enabled,
       archive: cfg.triage.archive,
       coldOutreachHint: cfg.triage.coldOutreachHint,
+      labels: cfg.triage.labels,
     },
     labels: {
       enabled: cfg.labels.enabled,

@@ -65,7 +65,11 @@ final class CLIRunnerTests: XCTestCase {
             llm: .init(provider: "anthropic", model: "claude-sonnet-5"),
             email: .init(
                 pollIntervalSec: 45, notifications: true, skipSenders: []),
-            triage: .init(enabled: true, archive: [], coldOutreachHint: ""),
+            triage: .init(
+                enabled: true, archive: [], coldOutreachHint: "",
+                labels: .init(
+                    newsletter: "N", notification: "O", marketing: "M",
+                    coldOutreach: "C", fyi: "F", important: "I")),
             labels: .init(enabled: true, pending: "P", resolved: "R"),
             instructions: .init(rules: []))
         var lines: [String] = []

@@ -31,7 +31,19 @@ describe("settingsFromConfig", () => {
         notifications: true,
         skipSenders: ["mailer-daemon"],
       },
-      triage: { enabled: true, archive: [], coldOutreachHint: "" },
+      triage: {
+        enabled: true,
+        archive: [],
+        coldOutreachHint: "",
+        labels: {
+          newsletter: "InboxMinder/Newsletter",
+          notification: "InboxMinder/Notification",
+          marketing: "InboxMinder/Marketing",
+          "cold-outreach": "InboxMinder/Cold Outreach",
+          fyi: "InboxMinder/FYI",
+          important: "InboxMinder/Important",
+        },
+      },
       labels: {
         enabled: true,
         pending: "InboxMinder/Pending",
@@ -50,6 +62,7 @@ describe("applySettings", () => {
   it("merges edited keys and preserves excluded keys in touched sections", () => {
     const d = doc();
     d.triage.archive = ["newsletter", "marketing"];
+    d.triage.labels.important = "Minder/Urgent";
     d.triage.coldOutreachHint = "friends of the fund are warm";
     d.email.pollIntervalSec = 90;
     const out = applySettings(RAW, d);
@@ -57,6 +70,8 @@ describe("applySettings", () => {
     expect(parsed.triage.archive).toEqual(["newsletter", "marketing"]);
     expect(parsed.triage.coldOutreachHint).toBe("friends of the fund are warm");
     expect(parsed.email.pollIntervalSec).toBe(90);
+    expect(parsed.triage.labels.important).toBe("Minder/Urgent");
+    expect(parsed.triage.labels.fyi).toBe("InboxMinder/FYI");
     // llm.baseUrl is NOT on the settings surface — it must survive.
     expect(parsed.llm.baseUrl).toBe("http://localhost:11434/v1");
   });

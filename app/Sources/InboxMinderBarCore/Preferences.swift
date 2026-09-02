@@ -30,17 +30,51 @@ public struct SettingsDoc: Codable, Equatable {
         }
     }
 
+    public struct CategoryLabels: Codable, Equatable {
+        public var newsletter: String
+        public var notification: String
+        public var marketing: String
+        public var coldOutreach: String
+        public var fyi: String
+        public var important: String
+
+        enum CodingKeys: String, CodingKey {
+            case newsletter
+            case notification
+            case marketing
+            case coldOutreach = "cold-outreach"
+            case fyi
+            case important
+        }
+
+        public init(
+            newsletter: String, notification: String, marketing: String,
+            coldOutreach: String, fyi: String, important: String
+        ) {
+            self.newsletter = newsletter
+            self.notification = notification
+            self.marketing = marketing
+            self.coldOutreach = coldOutreach
+            self.fyi = fyi
+            self.important = important
+        }
+    }
+
     public struct Triage: Codable, Equatable {
         public var enabled: Bool
         /// Subset of `TriageCategory.all` — categories that skip the inbox.
         public var archive: [String]
         public var coldOutreachHint: String
+        public var labels: CategoryLabels
 
-        public init(enabled: Bool, archive: [String], coldOutreachHint: String)
-        {
+        public init(
+            enabled: Bool, archive: [String], coldOutreachHint: String,
+            labels: CategoryLabels
+        ) {
             self.enabled = enabled
             self.archive = archive
             self.coldOutreachHint = coldOutreachHint
+            self.labels = labels
         }
     }
 
