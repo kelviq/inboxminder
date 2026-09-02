@@ -40,6 +40,9 @@ fi
 if [ -n "$SPARKLE_FRAMEWORK" ]; then
   mkdir -p "$APP/Contents/Frameworks"
   cp -R "$SPARKLE_FRAMEWORK" "$APP/Contents/Frameworks/"
+  # SwiftPM executables carry only @loader_path as rpath; the framework
+  # lives in Contents/Frameworks — point dyld there (before signing).
+  install_name_tool -add_rpath "@loader_path/../Frameworks"     "$APP/Contents/MacOS/InboxMinderBar"
 fi
 
 if [ "$SIGN_IDENTITY" = "-" ]; then
