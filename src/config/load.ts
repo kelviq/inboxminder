@@ -38,3 +38,9 @@ export function saveConfigToml(raw: string): void {
   ensureDirs();
   writeFileSync(CONFIG_PATH, raw);
 }
+
+/** Raw config.toml text, or null when no config exists yet. */
+export function readRawConfig(): string | null {
+  if (!existsSync(CONFIG_PATH)) return null;
+  return readFileSync(CONFIG_PATH, "utf8");
+}

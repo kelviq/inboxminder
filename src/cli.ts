@@ -6,6 +6,7 @@ import { Command } from "commander";
 import { registerAgentCommand } from "./cli/agent.js";
 import { registerAuthCommand } from "./cli/auth.js";
 import { registerClassifyCommand } from "./cli/classify.js";
+import { registerConfigCommand } from "./cli/config.js";
 import { registerInitCommand } from "./cli/init.js";
 import { registerSetKeyCommand } from "./cli/keys.js";
 import { registerProfilesCommand } from "./cli/profiles.js";
@@ -44,6 +45,7 @@ registerWatchCommand(program);
 registerAgentCommand(program);
 registerClassifyCommand(program);
 registerProfilesCommand(program);
+registerConfigCommand(program);
 
 program.parseAsync().catch((err: unknown) => {
   console.error(err instanceof Error ? err.message : String(err));

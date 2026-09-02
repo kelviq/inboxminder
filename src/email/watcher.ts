@@ -161,6 +161,12 @@ async function applyTriageCategory(
       { from: msg.from, subject: msg.subject, category, archived: archive },
       "triage: category labeled",
     );
+    recordActivity("labeled", {
+      subject: msg.subject,
+      threadId: msg.threadId,
+      messageId: msg.messageIdHeader || undefined,
+      detail: archive ? `${category} · archived` : category,
+    });
   } catch (err) {
     log.warn(
       { err, threadId: msg.threadId, category },
@@ -307,6 +313,11 @@ export async function runWatchTick(cfg: Config): Promise<boolean> {
         // semantics this tool must not fight.
         try {
           await mail.setThreadLabels?.(msg.threadId, [IMPORTANT_LABEL], []);
+          recordActivity("important", {
+            subject: msg.subject,
+            threadId: msg.threadId,
+            messageId: msg.messageIdHeader || undefined,
+          });
         } catch (err) {
           log.warn(
             { err, threadId: msg.threadId },

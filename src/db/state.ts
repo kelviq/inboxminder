@@ -152,12 +152,12 @@ export function hasCorrespondent(address: string): boolean {
 }
 
 // --- Activity feed -----------------------------------------------------------
-// A persisted, capped feed for the status surface (status.json). NOT an
-// audit log: triage decisions are diagnostics and stay in watch.log; the
-// cap is deliberate. Same privacy budget as notifications — subjects only,
-// never bodies.
+// A persisted, capped feed for the status surface (status.json) — what
+// the gatekeeper DID: category labels applied, Important flags, re-auth
+// events. Skips stay in watch.log (diagnostics); the cap is deliberate.
+// Same privacy budget as notifications — subjects only, never bodies.
 
-export type ActivityKind = "reauth";
+export type ActivityKind = "labeled" | "important" | "reauth";
 
 export interface ActivityRow {
   id: number;
