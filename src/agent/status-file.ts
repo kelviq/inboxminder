@@ -11,6 +11,7 @@ import {
   recentActivity,
 } from "../db/state.js";
 import { log } from "../log.js";
+import { updateAvailable } from "../update-check.js";
 import { staleAfterMs } from "./launchd.js";
 
 /*
@@ -35,6 +36,8 @@ export interface StatusFileInputs {
   selfEmail: string;
   /** Null/absent means the default profile. */
   profile: string | null;
+  /** Newer released CLI version, or null. Additive — `v` stays 1. */
+  updateAvailable: string | null;
   activity: ActivityRow[];
 }
 
@@ -48,6 +51,8 @@ export interface StatusJson {
   selfEmail: string;
   /** Additive — `v` stays 1; readers treat absence as null. */
   profile: string | null;
+  /** Additive — `v` stays 1; readers treat absence as null. */
+  updateAvailable: string | null;
   activity: Array<{
     kind: string;
     subject: string | null;
@@ -69,6 +74,7 @@ export function buildStatusJson(inputs: StatusFileInputs): StatusJson {
     reauthNeeded: inputs.reauthNeeded,
     selfEmail: inputs.selfEmail,
     profile: inputs.profile,
+    updateAvailable: inputs.updateAvailable,
     activity: inputs.activity.slice(0, ACTIVITY_IN_STATUS).map((r) => ({
       kind: r.kind,
       subject: r.subject,
@@ -96,6 +102,7 @@ export function writeStatusFile(cfg: Config): void {
       reauthNeeded: authFailedAt() !== null,
       selfEmail: getKV("gmail:selfEmail") ?? "",
       profile: profileName(),
+      updateAvailable: updateAvailable(),
       activity: recentActivity(ACTIVITY_IN_STATUS),
     });
     const path = join(DATA_DIR, "status.json");

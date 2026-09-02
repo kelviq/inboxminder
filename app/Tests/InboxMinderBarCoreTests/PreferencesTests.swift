@@ -7,7 +7,7 @@ final class PreferencesTests: XCTestCase {
         SettingsDoc(
             llm: .init(provider: "anthropic", model: "claude-sonnet-5"),
             email: .init(
-                pollIntervalSec: 45, notifications: true,
+                pollIntervalSec: 45, notifications: true, updateCheck: true,
                 skipSenders: ["mailer-daemon"]),
             triage: .init(
                 enabled: true, archive: ["newsletter"],
@@ -34,7 +34,7 @@ final class PreferencesTests: XCTestCase {
         XCTAssertEqual(
             sampleDoc().jsonString(),
             "{\"email\":{\"notifications\":true,\"pollIntervalSec\":45,"
-                + "\"skipSenders\":[\"mailer-daemon\"]},"
+                + "\"skipSenders\":[\"mailer-daemon\"],\"updateCheck\":true},"
                 + "\"instructions\":{\"rules\":[{\"match\":\"@vip.example\","
                 + "\"note\":\"Always important.\"}]},"
                 + "\"labels\":{\"enabled\":true,"
@@ -66,7 +66,7 @@ final class PreferencesTests: XCTestCase {
         let decoded = SettingsDoc.decode(
             Data("""
                 {"llm":{"provider":"openai","model":"gpt-5"},
-                 "email":{"pollIntervalSec":45,"notifications":false,"skipSenders":[]},
+                 "email":{"pollIntervalSec":45,"notifications":false,"updateCheck":true,"skipSenders":[]},
                  "triage":{"enabled":true,"archive":[],"coldOutreachHint":"",
                   "labels":{"newsletter":"N","notification":"O","marketing":"M",
                    "cold-outreach":"C","fyi":"F","important":"I"}},

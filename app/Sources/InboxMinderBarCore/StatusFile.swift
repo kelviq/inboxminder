@@ -18,6 +18,8 @@ public struct StatusFile: Codable, Equatable {
     /// Which profile wrote this file. Additive — absent in
     /// older status files, which must (and do) decode to nil (default).
     public let profile: String?
+    /// Newer released CLI version, or nil. Additive — absent decodes nil.
+    public let updateAvailable: String?
     public let activity: [ActivityItem]
 
     public struct ActivityItem: Codable, Equatable {
@@ -51,7 +53,7 @@ public struct StatusFile: Codable, Equatable {
     public init(
         v: Int, pid: Int, tickAt: Double, staleAfterMs: Double, paused: Bool,
         reauthNeeded: Bool, selfEmail: String, profile: String? = nil,
-        activity: [ActivityItem]
+        updateAvailable: String? = nil, activity: [ActivityItem]
     ) {
         self.v = v
         self.pid = pid
@@ -61,6 +63,7 @@ public struct StatusFile: Codable, Equatable {
         self.reauthNeeded = reauthNeeded
         self.selfEmail = selfEmail
         self.profile = profile
+        self.updateAvailable = updateAvailable
         self.activity = activity
     }
 

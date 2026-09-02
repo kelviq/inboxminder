@@ -19,13 +19,16 @@ public struct SettingsDoc: Codable, Equatable {
     public struct Email: Codable, Equatable {
         public var pollIntervalSec: Int
         public var notifications: Bool
+        public var updateCheck: Bool
         public var skipSenders: [String]
 
         public init(
-            pollIntervalSec: Int, notifications: Bool, skipSenders: [String]
+            pollIntervalSec: Int, notifications: Bool, updateCheck: Bool,
+            skipSenders: [String]
         ) {
             self.pollIntervalSec = pollIntervalSec
             self.notifications = notifications
+            self.updateCheck = updateCheck
             self.skipSenders = skipSenders
         }
     }

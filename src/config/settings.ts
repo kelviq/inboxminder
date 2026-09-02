@@ -25,6 +25,7 @@ export const SettingsSchema = z.object({
   email: z.object({
     pollIntervalSec: z.number().int().min(10),
     notifications: z.boolean(),
+    updateCheck: z.boolean(),
     skipSenders: z.array(z.string()),
   }),
   triage: z.object({
@@ -64,6 +65,7 @@ export function settingsFromConfig(cfg: Config): SettingsDoc {
     email: {
       pollIntervalSec: cfg.email.pollIntervalSec,
       notifications: cfg.email.notifications,
+      updateCheck: cfg.email.updateCheck,
       skipSenders: cfg.email.skipSenders,
     },
     triage: {

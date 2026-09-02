@@ -25,7 +25,7 @@ final class PreferencesStore: ObservableObject {
     @Published var doc = SettingsDoc(
         llm: .init(provider: "anthropic", model: "claude-sonnet-5"),
         email: .init(
-            pollIntervalSec: 45, notifications: true,
+            pollIntervalSec: 45, notifications: true, updateCheck: true,
             skipSenders: ["mailer-daemon"]),
         triage: .init(
             enabled: true, archive: [], coldOutreachHint: "",

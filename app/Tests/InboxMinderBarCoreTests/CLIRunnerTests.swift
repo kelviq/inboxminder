@@ -64,7 +64,8 @@ final class CLIRunnerTests: XCTestCase {
         let doc = SettingsDoc(
             llm: .init(provider: "anthropic", model: "claude-sonnet-5"),
             email: .init(
-                pollIntervalSec: 45, notifications: true, skipSenders: []),
+                pollIntervalSec: 45, notifications: true, updateCheck: true,
+                skipSenders: []),
             triage: .init(
                 enabled: true, archive: [], coldOutreachHint: "",
                 labels: .init(

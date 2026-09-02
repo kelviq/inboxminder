@@ -39,6 +39,10 @@ export const ConfigSchema = z.object({
       // macOS notifications — fired ONLY for Important reply-worthy mail
       // and re-auth failures; subjects only, never body content.
       notifications: z.boolean().default(true),
+      // Daily version check against GitHub releases (notify-only — the
+      // daemon never updates itself). One request/day carrying no user
+      // data; disclosed in the README. false disables entirely.
+      updateCheck: z.boolean().default(true),
     })
     .prefault({}),
   // The gatekeeper itself: every email gets one classifier call; non-reply

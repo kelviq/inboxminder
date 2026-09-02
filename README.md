@@ -63,7 +63,9 @@ note = "Never worth a reply."
 
 ## Privacy & data flow — read this
 
-Honesty over marketing: the email being classified (from, subject, first ~2000 chars of body) is sent to **the LLM provider you configure** — that's the one external data flow, and you choose who it is (including a local model, where there is none). Everything else stays on your Mac: OAuth tokens and API keys in the macOS Keychain, state in a local SQLite file, logs carry subjects/senders only — never bodies.
+Honesty over marketing: the email being classified (from, subject, first ~2000 chars of body) is sent to **the LLM provider you configure** — that's the one external data flow of your mail, and you choose who it is (including a local model, where there is none). Everything else stays on your Mac: OAuth tokens and API keys in the macOS Keychain, state in a local SQLite file, logs carry subjects/senders only — never bodies.
+
+Two housekeeping flows, both disclosed and controllable: the daemon asks api.github.com once a day whether a newer release exists (no user data attached; `updateCheck = false` disables), and the signed app checks its Sparkle update feed the same way (its consent prompt controls it).
 
 ## Requirements
 
@@ -130,6 +132,7 @@ model = "claude-sonnet-5"
 pollIntervalSec = 45
 skipSenders = ["mailer-daemon"]   # address substrings never worth classifying
 notifications = true              # Important mail + re-auth only, subjects only
+updateCheck = true                # daily "newer release exists?" notify-only check
 
 [triage]
 enabled = true
@@ -160,7 +163,12 @@ A native SwiftUI companion in `app/` — status at a glance, pause/resume, re-au
 make install-app     # builds from source, copies to /Applications
 ```
 
-The app is a pure shell over the daemon: it renders `~/.inboxminder/status.json` and spawns the CLI for every action — no network calls, no Keychain reads, no daemon logic of its own. Quitting it never stops the gatekeeper.
+The app is a pure shell over the daemon: it renders `~/.inboxminder/status.json` and spawns the CLI for every action — no Keychain reads, no daemon logic of its own (its only network activity is Sparkle's update feed, below). Quitting it never stops the gatekeeper.
+
+## Updating
+
+- **CLI/daemon:** `npm update -g inboxminder && inboxminder agent install` — the second command restarts the daemon onto the new code (a running daemon keeps its old code until restarted). The daemon checks GitHub once a day and notifies you when a newer release exists; it never updates itself. Set `updateCheck = false` under `[email]` to disable.
+- **App:** downloaded (signed) builds update themselves via Sparkle — consent-based, never silent. Build-from-source installs update by re-running `make install-app`.
 
 ## How it works
 

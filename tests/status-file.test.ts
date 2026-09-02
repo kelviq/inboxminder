@@ -28,6 +28,7 @@ describe("buildStatusJson (pure projection)", () => {
     reauthNeeded: false,
     selfEmail: "me@example.com",
     profile: null as string | null,
+    updateAvailable: null as string | null,
     activity: [] as import("../src/db/state.js").ActivityRow[],
   });
 
@@ -42,8 +43,18 @@ describe("buildStatusJson (pure projection)", () => {
       reauthNeeded: false,
       selfEmail: "me@example.com",
       profile: null,
+      updateAvailable: null,
       activity: [],
     });
+  });
+
+  it("carries updateAvailable additively — v stays 1", () => {
+    const json = statusFile.buildStatusJson({
+      ...baseInputs(),
+      updateAvailable: "1.2.3",
+    });
+    expect(json.v).toBe(1);
+    expect(json.updateAvailable).toBe("1.2.3");
   });
 
   it("carries the profile name additively — v stays 1", () => {

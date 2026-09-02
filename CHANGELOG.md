@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.9.1 — 2026-09-02
+
+Auto-update infrastructure.
+
+- Menu-bar app updates itself via Sparkle 2 (signed builds only):
+  EdDSA-verified, consent-based checks, "Check for updates…" in the
+  menu. Build-from-source installs are unaffected.
+- Daemon gains a notify-only daily update check against GitHub releases
+  (`[email] updateCheck`, default on, disclosed in the privacy section)
+  — it never updates itself; npm/brew remain the install channel.
+- status.json additively carries `updateAvailable`; the popover shows an
+  update row with a Releases link.
+- Release pipeline: tag-triggered CI signs (Developer ID, hardened
+  runtime), notarizes, staples, packages a DMG, publishes the GitHub
+  Release, and refreshes the Sparkle appcast on GitHub Pages.
+
 ## 0.9.0 — 2026-09-02
 
 Initial public release — extracted from a private tool running in

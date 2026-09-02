@@ -29,6 +29,7 @@ describe("settingsFromConfig", () => {
       email: {
         pollIntervalSec: 45,
         notifications: true,
+        updateCheck: true,
         skipSenders: ["mailer-daemon"],
       },
       triage: {

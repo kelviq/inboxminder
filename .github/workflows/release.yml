@@ -1,0 +1,97 @@
+name: Release
+
+# Tag-triggered (vX.Y.Z, maintainer-only by permission): build the app with
+# Developer ID + hardened runtime, notarize + staple, package a DMG, sign
+# the update for Sparkle, publish the GitHub Release, and refresh the
+# appcast on GitHub Pages. Secrets required (repo Settings → Secrets):
+#   MACOS_CERT_P12 (base64), MACOS_CERT_PASSWORD,
+#   ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8,
+#   SPARKLE_ED_PRIVATE_KEY
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Import Developer ID certificate
+        env:
+          MACOS_CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
+          MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+        run: |
+          set -euo pipefail
+          echo "$MACOS_CERT_P12" | base64 --decode > cert.p12
+          security create-keychain -p ci-tmp build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p ci-tmp build.keychain
+          security import cert.p12 -k build.keychain -P "$MACOS_CERT_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k ci-tmp build.keychain
+          rm cert.p12
+          identity=$(security find-identity -v -p codesigning build.keychain | awk -F '"' '/Developer ID Application/ {print $2; exit}')
+          [ -n "$identity" ] || { echo "no Developer ID Application identity found" >&2; exit 1; }
+          echo "SIGN_IDENTITY=$identity" >> "$GITHUB_ENV"
+
+      - name: Build + sign
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: bash scripts/build-app.sh
+
+      - name: Notarize + staple
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          set -euo pipefail
+          echo "$ASC_KEY_P8" > asc-key.p8
+          ditto -c -k --keepParent build/InboxMinder.app build/notarize.zip
+          xcrun notarytool submit build/notarize.zip \
+            --key asc-key.p8 --key-id "$ASC_KEY_ID" --issuer "$ASC_ISSUER_ID" \
+            --wait
+          rm asc-key.p8 build/notarize.zip
+          xcrun stapler staple build/InboxMinder.app
+          spctl -a -vv build/InboxMinder.app
+
+      - name: Package DMG
+        id: dmg
+        run: echo "path=$(bash scripts/package-dmg.sh)" >> "$GITHUB_OUTPUT"
+
+      - name: Sign update for Sparkle + generate appcast
+        env:
+          SPARKLE_ED_PRIVATE_KEY: ${{ secrets.SPARKLE_ED_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          BIN=$(find app/.build/artifacts -type d -name bin -path "*[Ss]parkle*" | head -1)
+          mkdir -p build/appcast
+          cp "${{ steps.dmg.outputs.path }}" build/appcast/
+          echo "$SPARKLE_ED_PRIVATE_KEY" | "$BIN/generate_appcast" --ed-key-file - \
+            --link "https://github.com/kelviq/inboxminder/releases" \
+            --download-url-prefix "https://github.com/kelviq/inboxminder/releases/download/${{ github.ref_name }}/" \
+            -o build/appcast/appcast.xml build/appcast
+          # Only the appcast goes to Pages; the DMG lives on the Release.
+          mkdir -p build/pages
+          cp build/appcast/appcast.xml build/pages/
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          notes=$(awk '/^## /{n++} n==1' CHANGELOG.md)
+          gh release create "${{ github.ref_name }}" "${{ steps.dmg.outputs.path }}" \
+            --title "InboxMinder ${{ github.ref_name }}" \
+            --notes "$notes"
+
+      - name: Publish appcast to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: build/pages
+          publish_branch: gh-pages
+          keep_files: true

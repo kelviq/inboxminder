@@ -181,6 +181,9 @@ struct PreferencesView: View {
                 Toggle(
                     "Notify on Important mail",
                     isOn: $store.doc.email.notifications)
+                Toggle(
+                    "Check for new versions daily (notify only)",
+                    isOn: $store.doc.email.updateCheck)
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Skip senders (comma-separated address substrings)")
                         .font(.caption).foregroundColor(.secondary)

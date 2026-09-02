@@ -22,6 +22,7 @@ import {
 import { classifyReplyWorthiness } from "../engine/classify.js";
 import { log } from "../log.js";
 import { notify } from "../notify.js";
+import { maybeCheckForUpdate } from "../update-check.js";
 import type { InboundMessage } from "./gmail.js";
 import type { MailProvider } from "./provider.js";
 import { mailProvider } from "./provider.js";
@@ -335,6 +336,8 @@ export async function runWatchTick(cfg: Config): Promise<boolean> {
       log.error({ err, id }, "message processing failed — will retry");
     }
   }
+  // Notify-only update check (internally throttled to 24h; fail-soft).
+  await maybeCheckForUpdate(cfg);
   return true;
 }
 

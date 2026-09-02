@@ -15,9 +15,15 @@
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleShortVersionString</key>
-  <string>0.9.0</string>
+  <string>0.9.1</string>
   <key>CFBundleVersion</key>
-  <string>1</string>
+  <string>0.9.1</string>
+  <!-- Sparkle auto-update (plan: Sparkle 2, consent-based checks). The
+       appcast lives on GitHub Pages; the DMGs on GitHub Releases. -->
+  <key>SUFeedURL</key>
+  <string>https://kelviq.github.io/inboxminder/appcast.xml</string>
+  <key>SUPublicEDKey</key>
+  <string>oOWCRZUiuf7d12g+5+kkXOm2AvHnu+qgOcsLxwa3Zec=</string>
   <key>LSMinimumSystemVersion</key>
   <string>13.0</string>
   <!-- Menu-bar only: no Dock icon (the app also sets .accessory at launch). -->

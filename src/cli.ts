@@ -12,6 +12,7 @@ import { registerSetKeyCommand } from "./cli/keys.js";
 import { registerProfilesCommand } from "./cli/profiles.js";
 import { registerUpCommand } from "./cli/up.js";
 import { registerWatchCommand } from "./cli/watch.js";
+import { VERSION } from "./version.js";
 
 /*
  * Thin wiring only: every command lives in its own file under src/cli/ —
@@ -35,7 +36,7 @@ program
     "--profile <name>",
     "run against an isolated profile (own config, secrets, agent)",
   )
-  .version("0.9.0");
+  .version(VERSION);
 
 registerInitCommand(program);
 registerSetKeyCommand(program);

@@ -38,6 +38,23 @@ struct PopoverView: View {
         header
         if store.derived.reauthNeeded { reauthBanner }
         content
+        if let update = store.derived.status?.updateAvailable, !embedded {
+            HStack(spacing: 6) {
+                Image(systemName: "arrow.down.circle")
+                    .foregroundColor(.secondary)
+                Text("Update available: \(update)").font(.caption)
+                Spacer()
+                Button("Releases") {
+                    if let url = URL(
+                        string:
+                            "https://github.com/kelviq/inboxminder/releases")
+                    {
+                        NSWorkspace.shared.open(url)
+                    }
+                }
+                .buttonStyle(.link).font(.caption)
+            }
+        }
         Divider()
         footer
     }
@@ -89,6 +106,9 @@ struct PopoverView: View {
             if !embedded {
                 // App-level items; in embedded mode the multi-profile
                 // wrapper's footer owns them.
+                Divider()
+                Button("Check for updates…") { Updater.checkForUpdates() }
+                    .disabled(Updater.controller == nil)
                 Divider()
                 Button("Quit InboxMinder Menu Bar (daemon keeps running)") {
                     NSApplication.shared.terminate(nil)
