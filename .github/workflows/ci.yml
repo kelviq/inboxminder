@@ -19,3 +19,12 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm verify
+
+  app:
+    # Menu-bar companion (app/, Swift). Separate job on purpose: a Swift
+    # toolchain hiccup must never block the TS gates above.
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: swift build --package-path app
+      - run: swift test --package-path app

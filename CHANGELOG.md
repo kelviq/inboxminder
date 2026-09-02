@@ -29,3 +29,8 @@ production on the author's own inbox since July 2026.
 - Profiles: fully isolated per-mailbox instances via `--profile`.
 - `inboxminder classify <id>` — safe single-message preview that labels
   nothing.
+- Menu-bar companion app (build from source: `make install-app`): live
+  status, pause/resume, re-auth, the triage activity feed, and a
+  Preferences window covering every setting — backed by the
+  `config get-settings`/`set-settings` CLI funnel, so the app itself
+  never touches config.toml, the Keychain, or the network.

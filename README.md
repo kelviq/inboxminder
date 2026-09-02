@@ -113,6 +113,7 @@ inboxminder classify <gmail-message-id>   # prints the verdict; labels nothing
 | `inboxminder watch` | Run the gatekeeper in the foreground |
 | `inboxminder agent install\|uninstall\|status\|pause\|resume` | Manage the launchd background agent |
 | `inboxminder classify <messageId>` | Print the verdict for one message — labels nothing |
+| `inboxminder config get-settings\|set-settings` | Read/update config through a validated funnel (what the Preferences window uses) |
 | `inboxminder profiles` | List configured profiles (`--profile <name>` isolates a second mailbox) |
 
 ## Configuration
@@ -143,6 +144,16 @@ resolved = "InboxMinder/Resolved"
 
 Multiple mailboxes: `inboxminder --profile work init` gives each mailbox a fully isolated instance (own config, Keychain entries, agent).
 
+## Menu-bar app (optional)
+
+A native SwiftUI companion in `app/` — status at a glance, pause/resume, re-auth, a feed of what got triaged, and a **Preferences window** covering every knob above (triage categories and archiving, per-sender rules, labels, model, daemon) so you never have to touch the TOML:
+
+```bash
+make install-app     # builds from source, copies to /Applications
+```
+
+The app is a pure shell over the daemon: it renders `~/.inboxminder/status.json` and spawns the CLI for every action — no network calls, no Keychain reads, no daemon logic of its own. Quitting it never stops the gatekeeper.
+
 ## How it works
 
 ~2,500 lines of TypeScript, no framework:
@@ -155,7 +166,6 @@ Multiple mailboxes: `inboxminder --profile work init` gives each mailbox a fully
 
 ## Roadmap
 
-- Menu-bar companion app (status, pause/resume, activity feed)
 - Browser extension: reorder the Gmail inbox by importance score in-place (the one thing the API can't do)
 - Daily digest of what was triaged
 - More providers (IMAP, Outlook)
