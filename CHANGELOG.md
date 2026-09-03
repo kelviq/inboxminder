@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.2 — 2026-09-03
+
+- The app has an icon: the Seal — an envelope under a shield-check.
+  (This release is also the first delivered via Sparkle auto-update.)
+- Releases now carry a version-less `InboxMinder.dmg` asset, giving the
+  website an evergreen download link
+  (`releases/latest/download/InboxMinder.dmg`).
+
 ## 0.9.1 — 2026-09-02
 
 Auto-update infrastructure.
