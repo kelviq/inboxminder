@@ -30,15 +30,10 @@ final class PreferencesStore: ObservableObject {
         triage: .init(
             enabled: true, archive: [], coldOutreachHint: "",
             labels: .init(
-                newsletter: "InboxMinder/Newsletter",
-                notification: "InboxMinder/Notification",
-                marketing: "InboxMinder/Marketing",
-                coldOutreach: "InboxMinder/Cold Outreach",
-                fyi: "InboxMinder/FYI",
-                important: "InboxMinder/Important")),
-        labels: .init(
-            enabled: true, pending: "InboxMinder/Pending",
-            resolved: "InboxMinder/Resolved"),
+                newsletter: "Newsletter", notification: "Notification",
+                marketing: "Marketing", coldOutreach: "Cold Outreach",
+                fyi: "FYI", important: "Important")),
+        labels: .init(enabled: true, pending: "Pending", resolved: "Resolved"),
         instructions: .init(rules: []))
     @Published var skipSendersText = ""
 
@@ -62,7 +57,7 @@ final class PreferencesStore: ObservableObject {
     func load() {
         guard let invoker else {
             phase = .failed(
-                "No inboxminder agent installed yet — finish setup first.")
+                "No inboxminder agent installed yet; finish setup first.")
             return
         }
         phase = .loading

@@ -58,19 +58,17 @@ export const ConfigSchema = z.object({
       // Free text appended to the cold-outreach criteria in the classify
       // prompt (e.g. what counts as a warm intro in your world).
       coldOutreachHint: z.string().max(500).default(""),
-      // Label names per category (a "/" nests them in Gmail's sidebar).
+      // Label names per category — short by default; add a "/" prefix
+      // (e.g. "Mail/Newsletter") to nest them in Gmail's sidebar.
       // TOML note: the hyphenated key needs quotes — "cold-outreach" = "…".
       labels: z
         .object({
-          newsletter: z.string().min(1).default("InboxMinder/Newsletter"),
-          notification: z.string().min(1).default("InboxMinder/Notification"),
-          marketing: z.string().min(1).default("InboxMinder/Marketing"),
-          "cold-outreach": z
-            .string()
-            .min(1)
-            .default("InboxMinder/Cold Outreach"),
-          fyi: z.string().min(1).default("InboxMinder/FYI"),
-          important: z.string().min(1).default("InboxMinder/Important"),
+          newsletter: z.string().min(1).default("Newsletter"),
+          notification: z.string().min(1).default("Notification"),
+          marketing: z.string().min(1).default("Marketing"),
+          "cold-outreach": z.string().min(1).default("Cold Outreach"),
+          fyi: z.string().min(1).default("FYI"),
+          important: z.string().min(1).default("Important"),
         })
         .prefault({}),
     })
@@ -82,8 +80,8 @@ export const ConfigSchema = z.object({
   labels: z
     .object({
       enabled: z.boolean().default(true),
-      pending: z.string().min(1).default("InboxMinder/Pending"),
-      resolved: z.string().min(1).default("InboxMinder/Resolved"),
+      pending: z.string().min(1).default("Pending"),
+      resolved: z.string().min(1).default("Resolved"),
     })
     .prefault({}),
   // Per-sender steering rules, keyed by sender ADDRESS substring (display

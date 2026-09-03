@@ -78,8 +78,8 @@ describe("[labels] config", () => {
   it("defaults: enabled with the InboxMinder/* names", () => {
     expect(ConfigSchema.parse({}).labels).toEqual({
       enabled: true,
-      pending: "InboxMinder/Pending",
-      resolved: "InboxMinder/Resolved",
+      pending: "Pending",
+      resolved: "Resolved",
     });
   });
 
@@ -95,8 +95,9 @@ describe("thread-state label projection", () => {
     await runWatchTick(labelsCfg(true));
     expect(setThreadLabels).toHaveBeenCalledWith(
       "t-label-1",
-      ["InboxMinder/Pending"],
-      ["InboxMinder/Resolved"],
+      ["Pending"],
+      ["Resolved"],
+      expect.anything(),
     );
   });
 
@@ -106,8 +107,9 @@ describe("thread-state label projection", () => {
     await runWatchTick(labelsCfg(true));
     expect(setThreadLabels).toHaveBeenCalledWith(
       "t-label-2",
-      ["InboxMinder/Resolved"],
-      ["InboxMinder/Pending"],
+      ["Resolved"],
+      ["Pending"],
+      expect.anything(),
     );
   });
 

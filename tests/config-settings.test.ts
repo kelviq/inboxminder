@@ -37,18 +37,18 @@ describe("settingsFromConfig", () => {
         archive: [],
         coldOutreachHint: "",
         labels: {
-          newsletter: "InboxMinder/Newsletter",
-          notification: "InboxMinder/Notification",
-          marketing: "InboxMinder/Marketing",
-          "cold-outreach": "InboxMinder/Cold Outreach",
-          fyi: "InboxMinder/FYI",
-          important: "InboxMinder/Important",
+          newsletter: "Newsletter",
+          notification: "Notification",
+          marketing: "Marketing",
+          "cold-outreach": "Cold Outreach",
+          fyi: "FYI",
+          important: "Important",
         },
       },
       labels: {
         enabled: true,
-        pending: "InboxMinder/Pending",
-        resolved: "InboxMinder/Resolved",
+        pending: "Pending",
+        resolved: "Resolved",
       },
       instructions: { rules: [] },
     });
@@ -72,7 +72,7 @@ describe("applySettings", () => {
     expect(parsed.triage.coldOutreachHint).toBe("friends of the fund are warm");
     expect(parsed.email.pollIntervalSec).toBe(90);
     expect(parsed.triage.labels.important).toBe("Minder/Urgent");
-    expect(parsed.triage.labels.fyi).toBe("InboxMinder/FYI");
+    expect(parsed.triage.labels.fyi).toBe("FYI");
     // llm.baseUrl is NOT on the settings surface — it must survive.
     expect(parsed.llm.baseUrl).toBe("http://localhost:11434/v1");
   });

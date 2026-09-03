@@ -266,7 +266,7 @@ export async function pollMailHistory(
     const profile = await g.users.getProfile({ userId: "me" });
     setKV("gmail:historyId", String(profile.data.historyId));
     setKV("gmail:selfEmail", profile.data.emailAddress ?? "");
-    log.info("initialized gmail cursor — watching from now on");
+    log.info("initialized gmail cursor; watching from now on");
     return { inboxIds: [], sentIds: [] };
   }
   try {
@@ -308,7 +308,7 @@ export async function pollMailHistory(
       (err as { response?: { status?: number } }).response?.status;
     if (status === 404) {
       // History cursors expire (~1 week). Reset and continue from now.
-      log.warn("gmail history expired — resetting cursor");
+      log.warn("gmail history expired; resetting cursor");
       const profile = await g.users.getProfile({ userId: "me" });
       setKV("gmail:historyId", String(profile.data.historyId));
       return { inboxIds: [], sentIds: [] };
@@ -346,12 +346,24 @@ export async function getMessage(id: string): Promise<InboundMessage | null> {
   };
 }
 
+export interface LabelColor {
+  /** From Gmail's fixed allowed palette — an off-palette hex is a 400. */
+  background: string;
+  text: string;
+}
+
 /**
  * Resolve a label NAME to its id, creating the label on first use ("/" in
- * the name nests it in Gmail's sidebar). Ids are kv-cached; the cache is
- * cleared by the caller on a stale-id failure.
+ * the name nests it in Gmail's sidebar). A `color` applies ONLY at
+ * creation — an existing label's color (possibly the user's own choice)
+ * is never overwritten. Ids are kv-cached; the cache is cleared by the
+ * caller on a stale-id failure.
  */
-async function labelId(g: gmail_v1.Gmail, name: string): Promise<string> {
+async function labelId(
+  g: gmail_v1.Gmail,
+  name: string,
+  color?: LabelColor,
+): Promise<string> {
   const cacheKey = `gmail:label:${name}`;
   const cached = getKV(cacheKey);
   if (cached) return cached;
@@ -367,6 +379,14 @@ async function labelId(g: gmail_v1.Gmail, name: string): Promise<string> {
       name,
       labelListVisibility: "labelShow",
       messageListVisibility: "show",
+      ...(color
+        ? {
+            color: {
+              backgroundColor: color.background,
+              textColor: color.text,
+            },
+          }
+        : {}),
     },
   });
   if (!created.data.id) throw new Error(`label create returned no id: ${name}`);
@@ -384,12 +404,13 @@ export async function setThreadLabels(
   threadId: string,
   addNames: string[],
   removeNames: string[],
+  colors?: Record<string, LabelColor>,
 ): Promise<void> {
   const g = gmail();
   const attempt = async () => {
     const [addLabelIds, removeLabelIds] = await Promise.all([
-      Promise.all(addNames.map((n) => labelId(g, n))),
-      Promise.all(removeNames.map((n) => labelId(g, n))),
+      Promise.all(addNames.map((n) => labelId(g, n, colors?.[n]))),
+      Promise.all(removeNames.map((n) => labelId(g, n, colors?.[n]))),
     ]);
     await g.users.threads.modify({
       userId: "me",

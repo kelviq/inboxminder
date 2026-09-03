@@ -23,7 +23,7 @@ import { classifyReplyWorthiness } from "../engine/classify.js";
 import { log } from "../log.js";
 import { notify } from "../notify.js";
 import { maybeCheckForUpdate } from "../update-check.js";
-import type { InboundMessage } from "./gmail.js";
+import type { InboundMessage, LabelColor } from "./gmail.js";
 import type { MailProvider } from "./provider.js";
 import { mailProvider } from "./provider.js";
 
@@ -49,10 +49,7 @@ function reportAuthFailure(cfg: Config): void {
   setKV("notified:reauth", String(Date.now()));
   recordActivity("reauth", {});
   if (cfg.email.notifications)
-    notify(
-      "InboxMinder",
-      "Gmail authorization expired — run: inboxminder auth",
-    );
+    notify("InboxMinder", "Gmail authorization expired; run: inboxminder auth");
 }
 
 /**
@@ -96,6 +93,25 @@ export function toAddresses(header: string): string[] {
 }
 
 /**
+ * Default colors for the labels we create, keyed by the CONFIGURED name
+ * (from Gmail's fixed allowed palette). Applied only when a label is
+ * first created — a user's hand-picked color is never overwritten.
+ */
+export function labelColors(cfg: Config): Record<string, LabelColor> {
+  const t = cfg.triage.labels;
+  return {
+    [t.newsletter]: { background: "#6d9eeb", text: "#ffffff" },
+    [t.notification]: { background: "#c2c2c2", text: "#000000" },
+    [t.marketing]: { background: "#b99aff", text: "#000000" },
+    [t["cold-outreach"]]: { background: "#e07798", text: "#ffffff" },
+    [t.fyi]: { background: "#2da2bb", text: "#ffffff" },
+    [t.important]: { background: "#ff7537", text: "#ffffff" },
+    [cfg.labels.pending]: { background: "#4a86e8", text: "#ffffff" },
+    [cfg.labels.resolved]: { background: "#16a766", text: "#ffffff" },
+  };
+}
+
+/**
  * Known-correspondent guard: can this sender NOT be a stranger? Two cheap
  * signals, each erring toward suppression (a missed Cold Outreach label is
  * fine; a real contact labeled cold is the complaint axis): References =
@@ -136,7 +152,7 @@ async function applyTriageCategory(
   if (category === "cold-outreach" && knownCorrespondent(msg)) {
     log.info(
       { from: msg.from, subject: msg.subject },
-      "triage: known correspondent — cold-outreach label suppressed",
+      "triage: known correspondent; cold-outreach label suppressed",
     );
     return;
   }
@@ -146,6 +162,7 @@ async function applyTriageCategory(
       msg.threadId,
       [cfg.triage.labels[category]],
       archive ? ["INBOX"] : [],
+      labelColors(cfg),
     );
     log.info(
       { from: msg.from, subject: msg.subject, category, archived: archive },
@@ -160,7 +177,7 @@ async function applyTriageCategory(
   } catch (err) {
     log.warn(
       { err, threadId: msg.threadId, category },
-      "triage label failed — continuing (insufficient scope? run: inboxminder auth)",
+      "triage label failed; continuing (insufficient scope? run: inboxminder auth)",
     );
   }
 }
@@ -208,17 +225,18 @@ export async function runWatchTick(cfg: Config): Promise<boolean> {
               msg.threadId,
               [cfg.labels.resolved],
               [cfg.labels.pending],
+              labelColors(cfg),
             );
           } catch (err) {
             log.warn(
               { err, threadId: msg.threadId },
-              "label resolve failed — continuing (insufficient scope? run: inboxminder auth)",
+              "label resolve failed; continuing (insufficient scope? run: inboxminder auth)",
             );
           }
         }
       } catch (err) {
         if (isAuthError(err)) throw err;
-        log.error({ err, id }, "outbound tracking failed — continuing");
+        log.error({ err, id }, "outbound tracking failed; continuing");
       }
     }
   }
@@ -288,11 +306,12 @@ export async function runWatchTick(cfg: Config): Promise<boolean> {
             msg.threadId,
             [cfg.labels.pending],
             [cfg.labels.resolved],
+            labelColors(cfg),
           );
         } catch (err) {
           log.warn(
             { err, threadId: msg.threadId },
-            "label pending failed — continuing (insufficient scope? run: inboxminder auth)",
+            "label pending failed; continuing (insufficient scope? run: inboxminder auth)",
           );
         }
       }
@@ -306,6 +325,7 @@ export async function runWatchTick(cfg: Config): Promise<boolean> {
             msg.threadId,
             [cfg.triage.labels.important],
             [],
+            labelColors(cfg),
           );
           recordActivity("important", {
             subject: msg.subject,
@@ -315,11 +335,11 @@ export async function runWatchTick(cfg: Config): Promise<boolean> {
         } catch (err) {
           log.warn(
             { err, threadId: msg.threadId },
-            "important label failed — continuing (insufficient scope? run: inboxminder auth)",
+            "important label failed; continuing (insufficient scope? run: inboxminder auth)",
           );
         }
         if (cfg.email.notifications)
-          notify("InboxMinder", `Important — ${msg.subject}`);
+          notify("InboxMinder", `Important: ${msg.subject}`);
       }
       markHandled(id);
       resolvePending(id);
@@ -331,9 +351,9 @@ export async function runWatchTick(cfg: Config): Promise<boolean> {
       if (attempts === MAX_PENDING_ATTEMPTS)
         log.error(
           { id, attempts },
-          "giving up on message — max pending attempts reached",
+          "giving up on message; max pending attempts reached",
         );
-      log.error({ err, id }, "message processing failed — will retry");
+      log.error({ err, id }, "message processing failed; will retry");
     }
   }
   // Notify-only update check (internally throttled to 24h; fail-soft).

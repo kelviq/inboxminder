@@ -1,5 +1,5 @@
 import type { Config } from "../config/schema.js";
-import type { InboundMessage, MailHistory } from "./gmail.js";
+import type { InboundMessage, LabelColor, MailHistory } from "./gmail.js";
 import * as gmail from "./gmail.js";
 
 /*
@@ -23,6 +23,7 @@ export interface MailProvider {
     threadId: string,
     addNames: string[],
     removeNames: string[],
+    colors?: Record<string, LabelColor>,
   ): Promise<void>;
 }
 
@@ -35,8 +36,8 @@ const gmailProvider: MailProvider = {
   pollMailHistory: (includeSent) => gmail.pollMailHistory(includeSent),
   getMessage: (id) => gmail.getMessage(id),
   setup: () => gmail.authorizeGmail(),
-  setThreadLabels: (threadId, addNames, removeNames) =>
-    gmail.setThreadLabels(threadId, addNames, removeNames),
+  setThreadLabels: (threadId, addNames, removeNames, colors) =>
+    gmail.setThreadLabels(threadId, addNames, removeNames, colors),
 };
 
 export function mailProvider(cfg: Config): MailProvider {
