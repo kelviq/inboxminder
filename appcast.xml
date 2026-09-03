@@ -3,14 +3,14 @@
     <channel>
         <title>InboxMinder</title>
         <item>
-            <title>0.9.1</title>
-            <pubDate>Thu, 03 Sep 2026 05:57:40 +0000</pubDate>
+            <title>0.9.2</title>
+            <pubDate>Thu, 03 Sep 2026 07:07:31 +0000</pubDate>
             <link>https://github.com/kelviq/inboxminder/releases</link>
-            <sparkle:version>0.9.1</sparkle:version>
-            <sparkle:shortVersionString>0.9.1</sparkle:shortVersionString>
+            <sparkle:version>0.9.2</sparkle:version>
+            <sparkle:shortVersionString>0.9.2</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
             <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-            <enclosure url="https://github.com/kelviq/inboxminder/releases/download/v0.9.1/InboxMinder-0.9.1.dmg" length="1625434" type="application/octet-stream" sparkle:edSignature="9AfDNKUIH+mXRiKPDmquUAULoLTnqA5yQ6soEDwwxSyvtJyeXFg6GRR2gG3aBInrUxPRottDWjIwdiClrxIhBA=="/>
+            <enclosure url="https://github.com/kelviq/inboxminder/releases/download/v0.9.2/InboxMinder-0.9.2.dmg" length="1734748" type="application/octet-stream" sparkle:edSignature="D7NqPz8QY51cZkw/jUN2jY38hKVHOE4Gt5MfUbmvRWe4sMZCjL6db8oqXU5nnTaCIUwtzs4vVEsEXEsZlAxMDQ=="/>
         </item>
     </channel>
 </rss>
