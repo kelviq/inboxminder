@@ -80,6 +80,14 @@ final class StatusStore: ObservableObject {
         scheduleFollowupRefresh()
     }
 
+    /// Quit Completely: stop and remove the launchd agent (the daemon),
+    /// used right before terminating the menu-bar app.
+    func stopAgent() {
+        guard let cli else { return }
+        CLIRunner.run(
+            cli, ["agent", "uninstall"], environment: paths.cliEnvironment)
+    }
+
     // MARK: refresh plumbing
 
     private func scheduleFollowupRefresh() {

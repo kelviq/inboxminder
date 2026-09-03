@@ -2,12 +2,11 @@ import AppKit
 import InboxMinderBarCore
 import SwiftUI
 
-/// One profile's surface. Standalone (the whole popover — pre-030 layout,
-/// unchanged for single-profile machines) or `embedded` as a section of
-/// the multi-profile popover: section header, tighter activity
-/// cap, app-level menu items lifted to the wrapper. Renders `store.derived`
-/// and delegates every mutation to the CLI. Reviewer rules: no
-/// network, no Keychain, no direct DB access, no daemon logic.
+/// One profile's surface. Standalone (the whole popover) or `embedded` as
+/// a section of the multi-profile popover: section header, tighter
+/// activity cap, app-level menu items lifted to the wrapper. Renders
+/// `store.derived` and delegates every mutation to the CLI. Reviewer
+/// rules: no network, no Keychain, no direct DB access, no daemon logic.
 struct PopoverView: View {
     @ObservedObject var store: StatusStore
     var embedded = false
@@ -15,48 +14,48 @@ struct PopoverView: View {
 
     var body: some View {
         if embedded {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 10) {
                 sectionHeader
                 inner
             }
-            .padding(8)
+            .padding(10)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.primary.opacity(0.03))
+            )
             .overlay(
-                RoundedRectangle(cornerRadius: 6)
-                    .stroke(Color.secondary.opacity(0.25))
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.primary.opacity(0.08))
             )
         } else {
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 0) {
                 inner
             }
-            .padding(12)
-            .frame(width: 320)
+            .frame(width: 340)
             .onAppear { store.refresh() }
         }
     }
 
     @ViewBuilder private var inner: some View {
         header
-        if store.derived.reauthNeeded { reauthBanner }
+            .padding(.horizontal, embedded ? 0 : 16)
+            .padding(.top, embedded ? 0 : 14)
+            .padding(.bottom, 10)
+        if store.derived.reauthNeeded {
+            reauthBanner
+                .padding(.horizontal, embedded ? 0 : 16)
+                .padding(.bottom, 8)
+        }
         content
         if let update = store.derived.status?.updateAvailable, !embedded {
-            HStack(spacing: 6) {
-                Image(systemName: "arrow.down.circle")
-                    .foregroundColor(.secondary)
-                Text("Update available: \(update)").font(.caption)
-                Spacer()
-                Button("Releases") {
-                    if let url = URL(
-                        string:
-                            "https://github.com/kelviq/inboxminder/releases")
-                    {
-                        NSWorkspace.shared.open(url)
-                    }
-                }
-                .buttonStyle(.link).font(.caption)
-            }
+            updateBanner(update)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
         }
-        Divider()
+        if !embedded { Divider() }
         footer
+            .padding(.horizontal, embedded ? 0 : 12)
+            .padding(.vertical, embedded ? 0 : 8)
     }
 
     // MARK: header
@@ -71,28 +70,93 @@ struct PopoverView: View {
     }
 
     private var header: some View {
-        HStack {
-            Text(statusLine)
-                .font(embedded ? .callout : .headline)
+        HStack(alignment: .center, spacing: 10) {
+            Circle()
+                .fill(statusColor)
+                .frame(width: 9, height: 9)
+                .shadow(color: statusColor.opacity(0.5), radius: 3)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(statusTitle)
+                    .font(embedded ? .callout.weight(.semibold) : .headline)
+                Text(statusSubtitle)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
+            }
             Spacer()
+            pauseToggle
             overflowMenu
         }
     }
 
-    private var statusLine: String {
+    private var statusColor: Color {
+        if store.derived.reauthNeeded { return .red }
         switch store.derived.run {
-        case .setupNeededNoConfig: return "InboxMinder isn't set up"
-        case .setupNeededNoAgent: return "Daemon not installed"
-        case .notReporting: return "Daemon not reporting"
+        case .ok: return .green
+        case .paused: return .yellow
+        case .setupNeededNoConfig, .setupNeededNoAgent: return .secondary.opacity(0.6)
+        case .stalled, .notRunning, .notReporting: return .red
+        }
+    }
+
+    private var statusTitle: String {
+        switch store.derived.run {
+        case .setupNeededNoConfig: return "Welcome to InboxMinder"
+        case .setupNeededNoAgent: return "Almost there"
+        case .notReporting: return "Agent out of date"
         case .notRunning: return "Agent not running"
-        case .stalled(let age):
-            return "STALLED — last tick \(AgeFormat.short(ms: age)) ago"
+        case .stalled: return "Agent stalled"
         case .paused:
             return store.pendingPause == false ? "Resuming…" : "Paused"
+        case .ok:
+            return store.pendingPause == true ? "Pausing…" : "Watching"
+        }
+    }
+
+    private var statusSubtitle: String {
+        let email = store.derived.status?.selfEmail ?? ""
+        switch store.derived.run {
+        case .setupNeededNoConfig: return "Two minutes to your first triage"
+        case .setupNeededNoAgent: return "Config found; install the agent"
+        case .notReporting: return "Running an older build"
+        case .notRunning: return "launchd shows no live process"
+        case .stalled(let age):
+            return "Last heartbeat \(AgeFormat.short(ms: age)) ago"
+        case .paused: return "Mail waits; nothing is lost"
         case .ok(let age):
-            return store.pendingPause == true
-                ? "Pausing…"
-                : "Watching — last tick \(AgeFormat.short(ms: age)) ago"
+            let tick = "Checked \(AgeFormat.short(ms: age)) ago"
+            return email.isEmpty ? tick : "\(tick) · \(email)"
+        }
+    }
+
+    /// Every header icon renders through this — identical size, weight,
+    /// rendering mode, and hit box, so the pair can never look mismatched.
+    private func headerIcon(_ symbol: String) -> some View {
+        Image(systemName: symbol)
+            .font(.system(size: 15, weight: .medium))
+            .symbolRenderingMode(.monochrome)
+            .foregroundColor(.secondary)
+            .frame(width: 24, height: 24)
+            .contentShape(Rectangle())
+    }
+
+    @ViewBuilder private var pauseToggle: some View {
+        switch store.derived.run {
+        case .ok, .paused, .stalled:
+            Button {
+                store.setPaused(store.derived.run == .paused ? false : true)
+            } label: {
+                headerIcon(
+                    store.derived.run == .paused
+                        ? "play.circle" : "pause.circle")
+            }
+            .buttonStyle(.plain)
+            .disabled(store.pendingPause != nil || store.cli == nil)
+            .help(
+                store.derived.run == .paused
+                    ? "Resume watching" : "Pause watching")
+        default:
+            EmptyView()
         }
     }
 
@@ -110,15 +174,24 @@ struct PopoverView: View {
                 Button("Check for updates…") { Updater.checkForUpdates() }
                     .disabled(Updater.controller == nil)
                 Divider()
-                Button("Quit InboxMinder Menu Bar (daemon keeps running)") {
+                Button("Quit Menu Bar") {
                     NSApplication.shared.terminate(nil)
                 }
+                .help("Closes this app; the gatekeeper daemon keeps running")
+                Button("Quit Completely") {
+                    store.stopAgent()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                        NSApplication.shared.terminate(nil)
+                    }
+                }
+                .help("Stops the gatekeeper daemon too; nothing watches until you run inboxminder up")
             }
         } label: {
-            Image(systemName: "ellipsis.circle")
+            headerIcon("ellipsis.circle")
         }
         .menuStyle(.borderlessButton)
-        .frame(width: 24)
+        .menuIndicator(.hidden)
+        .fixedSize()
     }
 
     // MARK: body per state
@@ -127,68 +200,90 @@ struct PopoverView: View {
         switch store.derived.run {
         case .setupNeededNoConfig:
             setupHint(
-                "Run this in a terminal to set up InboxMinder:",
+                "One command in your terminal starts the guided setup:",
                 command: "inboxminder init")
         case .setupNeededNoAgent:
             setupHint(
-                "Config found, but the background agent isn't installed:",
+                "Your config is ready; this installs the background agent:",
                 command: "inboxminder up")
         case .notReporting:
-            Text(
-                "The agent is installed but writes no status file — "
-                    + "it may be running a build older than the app. "
-                    + "Reinstall it from the … menu after `pnpm build`."
-            )
-            .font(.callout).foregroundColor(.secondary)
+            hintText(
+                "The agent predates this app. Rebuild it, then choose "
+                    + "Reinstall agent from the … menu.")
         case .notRunning:
-            Text(
-                "launchd shows no live process. Check "
-                    + "~/.inboxminder/logs/watch.err.log, then reinstall "
-                    + "from the … menu."
-            )
-            .font(.callout).foregroundColor(.secondary)
+            hintText(
+                "Check ~/.inboxminder/logs/watch.err.log, then choose "
+                    + "Reinstall agent from the … menu.")
         case .stalled, .paused, .ok:
-            pauseButton
             activityList
         }
     }
 
+    private func hintText(_ text: String) -> some View {
+        Text(text)
+            .font(.callout).foregroundColor(.secondary)
+            .padding(.horizontal, embedded ? 0 : 16)
+            .padding(.bottom, 10)
+    }
+
     private func setupHint(_ text: String, command: String) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 8) {
             Text(text).font(.callout).foregroundColor(.secondary)
-            HStack {
-                Text(command).font(.system(.body, design: .monospaced))
-                Button("Copy") {
+            HStack(spacing: 8) {
+                Text(command)
+                    .font(.system(.callout, design: .monospaced))
+                Spacer()
+                Button {
                     NSPasteboard.general.clearContents()
                     NSPasteboard.general.setString(command, forType: .string)
+                } label: {
+                    Image(systemName: "doc.on.doc")
                 }
+                .buttonStyle(.plain)
+                .foregroundColor(.secondary)
+                .help("Copy command")
             }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.primary.opacity(0.05))
+            )
         }
+        .padding(.horizontal, embedded ? 0 : 16)
+        .padding(.bottom, 12)
     }
 
     private var reauthBanner: some View {
-        HStack {
+        HStack(spacing: 8) {
             Image(systemName: "key.fill").foregroundColor(.orange)
-            Text("Gmail authorization expired").font(.callout)
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Gmail needs re-authorization").font(.callout.weight(.medium))
+                Text("Watching is on hold until then")
+                    .font(.caption2).foregroundColor(.secondary)
+            }
             Spacer()
-            Button("Re-authorize") { store.reauthorize() }
+            Button("Fix now") { store.reauthorize() }
+                .controlSize(.small)
         }
-        .padding(6)
-        .background(Color.orange.opacity(0.15))
-        .cornerRadius(6)
+        .padding(10)
+        .background(
+            RoundedRectangle(cornerRadius: 8).fill(Color.orange.opacity(0.12))
+        )
     }
 
-    private var pauseButton: some View {
-        HStack {
-            if store.derived.run == .paused {
-                Button("Resume watching") { store.setPaused(false) }
-                Text("Mail arriving now is triaged on resume")
-                    .font(.caption).foregroundColor(.secondary)
-            } else {
-                Button("Pause watching") { store.setPaused(true) }
-            }
+    private func updateBanner(_ version: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "sparkles")
+                .foregroundColor(.secondary)
+            Text("Version \(version) is available")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            Spacer()
+            Button("Update") { Updater.checkForUpdates() }
+                .controlSize(.small)
+                .disabled(Updater.controller == nil)
         }
-        .disabled(store.pendingPause != nil || store.cli == nil)
     }
 
     // MARK: activity feed
@@ -197,47 +292,82 @@ struct PopoverView: View {
         // Embedded sections cap tighter so a multi-product popover stays
         // scannable.
         let items = Array(
-            (store.derived.status?.activity ?? []).prefix(embedded ? 10 : 20))
-        if items.isEmpty {
-            Text("No activity yet — triaged mail will show here.")
-                .font(.caption).foregroundColor(.secondary)
-        } else {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 6) {
-                    ForEach(Array(items.enumerated()), id: \.offset) { _, item in
-                        ActivityRow(
-                            item: item,
-                            selfEmail: store.derived.status?.selfEmail ?? "")
-                    }
+            (store.derived.status?.activity ?? []).prefix(embedded ? 8 : 20))
+        VStack(alignment: .leading, spacing: 4) {
+            Text("RECENT ACTIVITY")
+                .font(.caption2.weight(.semibold))
+                .foregroundColor(.secondary.opacity(0.8))
+                .kerning(0.6)
+                .padding(.horizontal, embedded ? 0 : 16)
+            if items.isEmpty {
+                HStack(spacing: 8) {
+                    Image(systemName: "tray")
+                        .foregroundColor(.secondary.opacity(0.6))
+                    Text("Quiet so far; triaged mail will appear here.")
+                        .font(.caption).foregroundColor(.secondary)
                 }
+                .padding(.horizontal, embedded ? 0 : 16)
+                .padding(.vertical, 12)
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(Array(items.enumerated()), id: \.offset) {
+                            _, item in
+                            ActivityRow(
+                                item: item,
+                                selfEmail: store.derived.status?.selfEmail
+                                    ?? "",
+                                inset: embedded ? 0 : 10)
+                        }
+                    }
+                    .padding(.horizontal, embedded ? 0 : 6)
+                }
+                .frame(maxHeight: embedded ? 150 : 280)
             }
-            .frame(maxHeight: embedded ? 140 : 260)
         }
+        .padding(.bottom, 8)
     }
 
     // MARK: footer
 
     private var footer: some View {
-        HStack(spacing: 10) {
-            footerLink("Gmail") {
+        HStack(spacing: 2) {
+            footerAction("envelope", "Gmail") {
                 if let url = GmailLinks.inbox(
                     selfEmail: store.derived.status?.selfEmail ?? "")
                 {
                     NSWorkspace.shared.open(url)
                 }
             }
-            footerLink("Config") { openFile(store.paths.configToml) }
-            footerLink("Instructions") { openFile(store.paths.instructionsMd) }
-            footerLink("Log") { openFile(store.paths.watchLog) }
+            footerAction("slider.horizontal.3", "Preferences") {
+                NSApp.activate(ignoringOtherApps: true)
+                openWindow(id: "preferences", value: store.paths.profile ?? "")
+            }
+            footerAction("doc.badge.gearshape", "Config") {
+                openFile(store.paths.configToml)
+            }
+            footerAction("text.alignleft", "Log") {
+                openFile(store.paths.watchLog)
+            }
             Spacer()
         }
-        .font(.caption)
     }
 
-    private func footerLink(_ title: String, action: @escaping () -> Void)
-        -> some View
-    {
-        Button(title, action: action).buttonStyle(.link)
+    private func footerAction(
+        _ symbol: String, _ title: String, action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack(spacing: 4) {
+                Image(systemName: symbol).font(.system(size: 11))
+                Text(title).font(.caption)
+            }
+            .foregroundColor(.secondary)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 5)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .onHoverHighlight()
     }
 
     private func openFile(_ url: URL) {
@@ -245,77 +375,144 @@ struct PopoverView: View {
     }
 }
 
+// MARK: - activity row
+
 struct ActivityRow: View {
     let item: StatusFile.ActivityItem
     let selfEmail: String
+    var inset: CGFloat = 10
+    @State private var hovering = false
 
     var body: some View {
-        HStack(alignment: .top, spacing: 6) {
-            Image(systemName: symbol)
-                .frame(width: 14)
-                .foregroundColor(.secondary)
+        HStack(alignment: .center, spacing: 10) {
+            ZStack {
+                Circle().fill(tint.opacity(0.15)).frame(width: 26, height: 26)
+                Image(systemName: symbol)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(tint)
+            }
             VStack(alignment: .leading, spacing: 1) {
                 Text(title).font(.callout).lineLimit(1)
                 Text(subtitle).font(.caption2).foregroundColor(.secondary)
+                    .lineLimit(1)
             }
-            Spacer()
-            if let url = GmailLinks.best(item: item, selfEmail: selfEmail) {
+            Spacer(minLength: 4)
+            if hovering, let url = GmailLinks.best(item: item, selfEmail: selfEmail) {
                 Button {
                     NSWorkspace.shared.open(url)
                 } label: {
-                    Image(systemName: "arrow.up.right.square")
+                    Image(systemName: "arrow.up.forward")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(.secondary)
                 }
                 .buttonStyle(.plain)
-                .foregroundColor(.secondary)
                 .help("Open in Gmail")
-            } else if let path = item.path, !path.isEmpty {
-                // Docs rows: open the written file — the daemon supplies the
-                // absolute path; the app resolves nothing.
-                Button {
-                    NSWorkspace.shared.open(URL(fileURLWithPath: path))
-                } label: {
-                    Image(systemName: "doc.text.magnifyingglass")
-                }
-                .buttonStyle(.plain)
-                .foregroundColor(.secondary)
-                .help("Open file")
+            } else {
+                Text(relativeTime)
+                    .font(.caption2)
+                    .foregroundColor(.secondary.opacity(0.7))
+                    .monospacedDigit()
             }
         }
+        .padding(.horizontal, inset)
+        .padding(.vertical, 6)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(hovering ? Color.primary.opacity(0.06) : .clear)
+        )
+        .onHover { hovering = $0 }
     }
 
     private var title: String {
         item.subject ?? item.detail ?? item.kind
     }
 
+    /// The category rides in `detail` ("cold-outreach", "marketing ·
+    /// archived", …); split off any annotation after "·".
+    private var category: String {
+        (item.detail ?? "").split(separator: "·").first.map {
+            $0.trimmingCharacters(in: .whitespaces)
+        } ?? ""
+    }
+
+    private var archived: Bool { (item.detail ?? "").contains("archived") }
+
     private var subtitle: String {
-        var parts: [String] = [label]
-        if let detail = item.detail, item.subject != nil { parts.append(detail) }
-        parts.append(relativeTime)
-        return parts.joined(separator: " · ")
+        switch item.kind {
+        case "important": return "Marked important"
+        case "reauth": return "Gmail authorization expired"
+        case "labeled":
+            let name = categoryDisplay.isEmpty ? "Labeled" : categoryDisplay
+            return archived ? "\(name) · archived" : name
+        default: return item.kind
+        }
+    }
+
+    private var categoryDisplay: String {
+        switch category {
+        case "newsletter": return "Newsletter"
+        case "notification": return "Notification"
+        case "marketing": return "Marketing"
+        case "cold-outreach": return "Cold outreach"
+        case "fyi": return "FYI"
+        default: return category
+        }
     }
 
     private var relativeTime: String {
-        let date = Date(timeIntervalSince1970: item.at / 1000)
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: date, relativeTo: Date())
+        AgeFormat.short(
+            ms: max(0, Date().timeIntervalSince1970 * 1000 - item.at))
     }
 
-    private var label: String {
+    private var tint: Color {
         switch item.kind {
-        case "labeled": return "Labeled"
-        case "important": return "Important"
-        case "reauth": return "Re-auth needed"
-        default: return item.kind
+        case "important": return .orange
+        case "reauth": return .red
+        default:
+            switch category {
+            case "newsletter": return .indigo
+            case "notification": return .secondary
+            case "marketing": return .purple
+            case "cold-outreach": return .pink
+            case "fyi": return .teal
+            default: return .secondary
+            }
         }
     }
 
     private var symbol: String {
         switch item.kind {
-        case "labeled": return "tag"
-        case "important": return "exclamationmark.circle"
-        case "reauth": return "key"
-        default: return "circle"
+        case "important": return "exclamationmark.circle.fill"
+        case "reauth": return "key.fill"
+        default:
+            switch category {
+            case "newsletter": return "newspaper"
+            case "notification": return "bell"
+            case "marketing": return "megaphone"
+            case "cold-outreach": return "snowflake"
+            case "fyi": return "info.circle"
+            default: return "tag"
+            }
         }
+    }
+}
+
+// MARK: - helpers
+
+private struct HoverHighlight: ViewModifier {
+    @State private var hovering = false
+    func body(content: Content) -> some View {
+        content
+            .background(
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(hovering ? Color.primary.opacity(0.06) : .clear)
+            )
+            .onHover { hovering = $0 }
+    }
+}
+
+extension View {
+    fileprivate func onHoverHighlight() -> some View {
+        modifier(HoverHighlight())
     }
 }
