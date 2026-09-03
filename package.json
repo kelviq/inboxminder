@@ -1,7 +1,7 @@
 {
   "name": "inboxminder",
-  "version": "0.9.2",
-  "description": "Open-source agent gatekeeper for your inbox. Every email is read locally on your Mac, scored, and triaged with Gmail labels — nothing is hosted, nothing is sent, your own LLM key.",
+  "version": "0.9.3",
+  "description": "Open-source agent gatekeeper for your inbox. Every email is read locally on your Mac, scored, and triaged with Gmail labels. Nothing is hosted, nothing is sent, your own LLM key.",
   "type": "module",
   "license": "AGPL-3.0-only",
   "packageManager": "pnpm@11.18.0",
