@@ -23,6 +23,22 @@ enum Updater {
     }
 }
 
+/// The brand leaf as a menu-bar template image (black + alpha; macOS
+/// recolors it for light/dark/selected). Loaded from the bundle — absent
+/// in dev `swift run`, where the SF Symbol fallback renders instead.
+enum MenuBarIcon {
+    static let template: NSImage? = {
+        guard
+            let url = Bundle.main.url(
+                forResource: "MenuIcon@2x", withExtension: "png"),
+            let img = NSImage(contentsOf: url)
+        else { return nil }
+        img.isTemplate = true
+        img.size = NSSize(width: 18, height: 18)
+        return img
+    }()
+}
+
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Menu-bar-only app: no Dock icon, no app switcher entry. Set
@@ -42,10 +58,16 @@ struct InboxMinderBarApp: App {
         MenuBarExtra {
             PopoverRootView(profiles: profiles)
         } label: {
-            // Template SF Symbols so light/dark menu bars work for free.
-            // Worst state across profiles wins (IconState) —
-            // single-profile machines get the simple mapping.
-            Image(systemName: profiles.iconSymbol)
+            // The brand leaf while all is well; template SF Symbols for
+            // the states that need to LOOK different at a glance (paused,
+            // setup, attention). Worst state across profiles wins.
+            if profiles.iconSymbol == "envelope",
+                let leaf = MenuBarIcon.template
+            {
+                Image(nsImage: leaf)
+            } else {
+                Image(systemName: profiles.iconSymbol)
+            }
         }
         .menuBarExtraStyle(.window)
 

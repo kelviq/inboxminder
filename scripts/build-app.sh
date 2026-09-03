@@ -32,6 +32,7 @@ cp app/Support/Info.plist "$APP/Contents/Info.plist"
 if [ -f app/Support/AppIcon.icns ]; then
   cp app/Support/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 fi
+cp app/Support/MenuIcon*.png "$APP/Contents/Resources/" 2>/dev/null || true
 # Sparkle.framework rides in the bundle (SwiftPM artifact).
 SPARKLE_FRAMEWORK=$(find app/.build -type d -name "Sparkle.framework" -path "*release*" | head -1)
 if [ -z "$SPARKLE_FRAMEWORK" ]; then
