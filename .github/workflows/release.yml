@@ -51,6 +51,9 @@ jobs:
           set -uo pipefail
           echo "$ASC_KEY_P8" > asc-key.p8
           ditto -c -k --keepParent build/InboxMinder.app build/notarize.zip
+          # set +e: the runner shell carries -e, which would abort before
+          # the diagnostics below ever print (bit us on the first failure).
+          set +e
           xcrun notarytool submit build/notarize.zip \
             --key asc-key.p8 --key-id "$ASC_KEY_ID" --issuer "$ASC_ISSUER_ID" \
             --wait --output-format json > notary.json
