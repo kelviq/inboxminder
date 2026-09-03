@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InboxMinder: the gatekeeper for your inbox</title>
+<meta name="description" content="An open-source agent that scores every email as it arrives and sorts it with Gmail labels. Runs on your Mac with your own LLM key. Nothing is hosted, ever.">
+<link rel="canonical" href="https://inboxminder.com/">
+<meta name="theme-color" content="#171923">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://inboxminder.com/">
+<meta property="og:title" content="InboxMinder: the gatekeeper for your inbox">
+<meta property="og:description" content="An open-source agent that scores every email as it arrives and sorts it with Gmail labels. Runs on your Mac with your own LLM key. Nothing is hosted, ever.">
+<meta property="og:image" content="https://inboxminder.com/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="fonts/Inter-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/RobotoSerif-700i.woff2" as="font" type="font/woff2" crossorigin>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"InboxMinder","operatingSystem":"macOS","applicationCategory":"UtilitiesApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"downloadUrl":"https://github.com/kelviq/inboxminder/releases/latest/download/InboxMinder.dmg","softwareVersion":"0.9.3","license":"https://www.gnu.org/licenses/agpl-3.0.html","author":{"@type":"Organization","name":"Kelviq","url":"https://www.kelviq.com"}}
+</script>
+<style>
+@font-face{font-family:'Inter';font-style:normal;font-weight:100 900;font-display:swap;src:url(fonts/Inter-var.woff2) format('woff2')}
+@font-face{font-family:'Geist Mono';font-style:normal;font-weight:100 900;font-display:swap;src:url(fonts/GeistMono-var.woff2) format('woff2')}
+@font-face{font-family:'Roboto Serif';font-style:italic;font-weight:700;font-display:swap;src:url(fonts/RobotoSerif-700i.woff2) format('woff2')}
+:root{--accent:#ff4500;--accent-soft:#ffe8e0;--accent-border:#ffd6c3;--accent-warm:#ff7040;--ink:#1a202c;--ink-2:#2d3748;--body:#4a5568;--muted:#718096;--faint:#a0aec0;--line:#e2e8f0;--line-soft:#edf2f7;--bg-soft:#f7fafc;--dark:#171923;--dark-2:#1a202c;--dark-line:#2d3748;--mono:'Geist Mono','SF Mono',ui-monospace,Menlo,monospace;--serif:'Roboto Serif',Georgia,serif}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#fff;color:var(--ink);font-family:'Inter','Helvetica Neue',Arial,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+img{max-width:100%;display:block}
+figure{margin:0}
+.wrap{max-width:1128px;margin:0 auto;padding:0 24px}
+.btn{display:inline-flex;align-items:center;gap:9px;border-radius:99px;padding:14px 24px;font-size:15px;font-weight:600;text-decoration:none}
+.btn:hover{text-decoration:none;filter:brightness(1.06)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-dark{background:var(--dark);color:#ffffffeb}
+.btn-ghost{border:1px solid #4a5568;color:#ffffffeb}
+.kicker{font-size:14px;letter-spacing:1px;color:var(--accent);font-weight:600;text-transform:uppercase}
+.h2{font-size:32px;font-weight:700;line-height:1.375;letter-spacing:-.01em;margin:0}
+.serif{font-family:var(--serif);font-style:italic}
+.chip{display:inline-block;font-size:10px;font-weight:600;border-radius:4px;padding:1.5px 6px;white-space:nowrap}
+.card{border:1px solid var(--line);border-radius:12px;padding:24px;background:#fff}
+.skip{position:absolute;left:-9999px;top:0;background:#fff;padding:10px 16px;z-index:99}
+.skip:focus{left:12px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* nav */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:24px 0}
+.brand{display:flex;align-items:center;color:#1c0200}
+.logo-wm{height:24px;width:auto;display:block}
+.logo-wm-s{height:19px;width:auto;display:block;color:#ffffffeb}
+.logo-leaf{height:52px;width:auto}
+.nav-links{display:flex;align-items:center;gap:28px;font-size:14px;font-weight:500}
+.nav-links a{color:var(--ink-2)}
+.nav-gh{display:inline-flex;align-items:center;gap:8px;border:1px solid #cbd5e0;border-radius:8px;padding:8px 14px;color:var(--ink)!important}
+.nav-gh:hover{text-decoration:none;background:var(--bg-soft)}
+
+/* hero */
+.hero{display:flex;gap:56px;align-items:center;padding:130px 0 150px}
+.hero-copy{display:flex;flex-direction:column;gap:22px;flex:1;max-width:540px}
+.badges{display:flex;gap:8px;flex-wrap:wrap}
+.badge{font-family:var(--mono);font-size:12px;border-radius:99px;padding:4px 12px}
+.badge-accent{color:var(--accent);border:1px solid var(--accent-border);background:var(--accent-soft)}
+.badge-plain{color:var(--body);border:1px solid var(--line);background:var(--bg-soft)}
+h1{font-weight:700;font-size:64px;line-height:1.19;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.hero-sub{font-size:18px;line-height:1.55;color:var(--body);text-wrap:pretty;margin:0}
+.cta-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.facts{font-size:13px;color:var(--muted);font-weight:500;margin:0}
+
+/* gmail mock */
+.gmail{width:460px;flex-shrink:0;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 16px 40px rgba(22,33,31,.1);overflow:hidden}
+.gm-top{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f6f8fc;border-bottom:1px solid var(--line-soft)}
+.gm-search{flex:1;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:99px;padding:6px 12px;font-size:12px;color:#80868b}
+.gm-bar{display:flex;align-items:center;justify-content:space-between;padding:7px 14px;border-bottom:1px solid var(--line-soft)}
+.gm-bar-l{display:flex;align-items:center;gap:10px}
+.gm-count{font-size:11px;color:#5f6368}
+.gm-cb{width:13px;height:13px;border:1.5px solid #bdc1c6;border-radius:3px;flex-shrink:0}
+.gm-row{display:flex;align-items:center;gap:9px;padding:10px 14px;border-bottom:1px solid #f1f3f4;background:#f9fafb}
+.gm-row.unread{background:#fff}
+.gm-row:last-child{border-bottom:none}
+.gm-from{width:78px;flex-shrink:0;font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.unread .gm-from{font-weight:700;color:#202124}
+.gm-mid{flex:1;display:flex;align-items:center;gap:5px;min-width:0}
+.gm-subj{font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.unread .gm-subj b{font-weight:700;color:#202124}
+.gm-time{font-size:11px;color:#5f6368;flex-shrink:0}
+.unread .gm-time{font-weight:700;color:#202124}
+.star{flex-shrink:0}
+
+/* dark bands */
+.band-dark{background:var(--dark);color:#ffffffeb}
+.noise{display:flex;flex-direction:column;gap:26px;align-items:center;padding:64px 24px;text-align:center}
+.noise .h2{color:#ffffffeb;font-size:34px;text-wrap:balance;max-width:700px}
+.noise .h2 .accent{color:var(--accent-warm)}
+.noise p{font-size:16px;line-height:1.7;color:var(--faint);max-width:560px;margin:0}
+.dots{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:820px}
+.dots i{width:10px;height:10px;border-radius:3px;background:var(--dark-line)}
+.dots i.on{background:var(--accent);box-shadow:0 0 10px rgba(255,69,0,.55)}
+
+
+/* sections */
+.section{padding:80px 0}
+.section-head{display:flex;flex-direction:column;gap:10px;margin-bottom:36px}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.step-num{font-family:var(--mono);font-size:13px;color:var(--accent)}
+.card h3{font-weight:600;font-size:17px;margin:0}
+.card p{font-size:14px;line-height:1.55;color:var(--body);margin:0}
+.card-feature{padding:20px;display:flex;flex-direction:column;gap:8px}
+.card-feature h3{font-size:15px}
+.card-feature p{font-size:13px;line-height:1.5}
+.icon-accent{color:var(--accent)}
+.card,.open-card{transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease}
+.grid-3 .card:hover,.grid-4 .card:hover,.open-card:hover{border-color:#d3dae2;box-shadow:0 8px 24px rgba(22,33,31,.07);transform:translateY(-2px)}
+.section-sub{font-size:16px;color:var(--body);line-height:1.6;margin:0;max-width:620px}
+.pipeline .card{position:relative}
+.pipeline .card:not(:last-child)::after{content:"\2192";position:absolute;right:-20px;top:50%;transform:translateY(-50%);color:#cbd5e0;font-size:18px}
+.how-ico{width:44px;height:44px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center}
+.pipeline .card{display:flex;flex-direction:column;gap:12px;padding:28px}
+.pipeline .card h3{font-size:18px}
+.f-ico{width:36px;height:36px;border-radius:10px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.f-ico.warm{background:#fff6de}
+.cmp-head{display:flex;align-items:center;gap:10px}
+.cmp-ico{width:30px;height:30px;border-radius:8px;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0}
+.compare-hi .cmp-ico{background:var(--accent-soft);color:var(--accent)}
+.plan-tag{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:2px 8px}
+.open-card .head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.p-ico{width:34px;height:34px;border-radius:99px;background:rgba(255,112,64,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* setup */
+.band-soft{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.setup{display:flex;gap:56px;padding:80px 0}
+.setup-steps{max-width:480px;display:flex;flex-direction:column}
+.step{display:flex;gap:14px}
+.step-rail{display:flex;flex-direction:column;align-items:center;gap:4px}
+.step-dot{width:26px;height:26px;border-radius:99px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.step-line{width:1.5px;flex:1;background:var(--line)}
+.step-body{display:flex;flex-direction:column;gap:4px;padding-bottom:22px}
+.step-body h3{font-weight:600;font-size:16px;margin:0}
+.step-body p{font-size:14px;line-height:1.55;color:var(--body);margin:0}
+code{font-family:var(--mono);font-size:13px;background:#e8edf3;border-radius:4px;padding:1px 6px;color:var(--ink-2)}
+.term{flex:1;align-self:center;background:var(--dark);border-radius:14px;overflow:hidden;box-shadow:0 18px 40px rgba(22,33,31,.14);min-width:0}
+.term-bar{display:flex;gap:6px;padding:11px 14px;border-bottom:1px solid var(--dark-line)}
+.dot{width:10px;height:10px;border-radius:99px}
+.term-body{padding:20px 24px 24px;font-family:var(--mono);font-size:13px;line-height:2;overflow-x:auto}
+.t-p{color:var(--accent-warm)}.t-w{color:#ffffffeb}.t-d{color:var(--faint)}.t-l{color:#ffffffcc}.t-g{color:#16d3a2}.t-m{color:var(--muted)}
+
+/* anatomy */
+.anatomy{display:flex;gap:56px;align-items:center;padding:80px 0}
+.anatomy-copy{max-width:440px;display:flex;flex-direction:column;gap:14px}
+.anatomy-copy p{font-size:16px;line-height:1.75;color:var(--body);margin:0}
+.anatomy-copy .fine{font-size:14px;line-height:1.7;color:var(--muted)}
+.codeblock{flex:1;background:var(--dark);border-radius:14px;padding:24px 28px;font-family:var(--mono);font-size:13px;line-height:1.85;min-width:0;overflow-x:auto}
+
+/* compare */
+.compare-hi{border:1.5px solid var(--accent);background:#fff8f5}
+.compare-hi h3{color:var(--accent)}
+.card h3+p{margin-top:10px}
+
+/* privacy */
+.privacy{display:flex;gap:64px;padding:72px 0}
+.privacy-copy{max-width:460px;display:flex;flex-direction:column;gap:14px}
+.privacy-copy .kicker{color:var(--accent-warm)}
+.privacy-copy .h2{color:#ffffffeb}
+.privacy-copy p{font-size:15px;line-height:1.6;color:var(--faint);margin:0}
+.privacy-copy strong{color:#ffffffeb;font-weight:600}
+.privacy-cards{flex:1;display:flex;flex-direction:column;gap:16px;justify-content:center}
+.privacy-card{display:flex;gap:12px;align-items:center;background:var(--dark-2);border:1px solid var(--dark-line);border-radius:10px;padding:16px 20px;font-size:14px;color:#ffffffcc}
+.privacy-card a{color:var(--accent-warm);font-weight:600}
+.privacy-card svg{flex-shrink:0}
+
+/* app mockups */
+.mock-frame{display:flex;align-items:center;justify-content:center;min-height:400px;border:1px solid var(--line);border-radius:14px;background:var(--bg-soft);padding:24px}
+.mock-frame.tint{background:linear-gradient(160deg,var(--accent-soft),var(--bg-soft))}
+.popover{width:330px;max-width:100%;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 18px 40px rgba(22,33,31,.16);overflow:hidden;font-size:13px}
+.pop-head{display:flex;align-items:center;gap:10px;padding:13px 14px}
+.pop-title{font-weight:600;font-size:13px}
+.pop-sub{font-size:11px;color:var(--muted)}
+.pop-label{border-top:1px solid var(--line-soft);padding:9px 14px 4px;font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--faint)}
+.pop-rows{padding:0 6px 6px}
+.pop-row{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:8px}
+.pop-ico{width:22px;height:22px;border-radius:99px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pop-subj{flex:1;font-size:12px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pop-time{font-size:10px;color:var(--faint)}
+.pop-foot{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line-soft);padding:9px 16px}
+.prefs{width:380px;max-width:100%;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 18px 40px rgba(22,33,31,.12);overflow:hidden}
+.prefs-bar{display:flex;align-items:center;gap:6px;padding:10px 12px;border-bottom:1px solid var(--line-soft)}
+.prefs-title{flex:1;text-align:center;font-size:12px;font-weight:600;color:var(--body);margin-left:-40px}
+.prefs-tabs{display:flex;justify-content:center;gap:4px;padding:8px 0;border-bottom:1px solid var(--line-soft);font-size:11px;font-weight:500;color:var(--muted)}
+.prefs-tab-on{background:var(--line-soft);color:var(--ink);border-radius:6px;padding:4px 12px;font-weight:600}
+.prefs-tab{padding:4px 12px}
+.prefs-body{display:flex;flex-direction:column;gap:10px;padding:14px 16px}
+.prefs-group{background:var(--bg-soft);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.prefs-row{display:flex;align-items:center;justify-content:space-between}
+.prefs-h{font-size:12px;font-weight:600}
+.prefs-s{font-size:10px;color:var(--muted)}
+.prefs-k{font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--faint)}
+.toggle{width:34px;height:20px;border-radius:99px;background:var(--accent);display:flex;align-items:center;justify-content:flex-end;padding:0 2px;flex-shrink:0}
+.knob{width:16px;height:16px;border-radius:99px;background:#fff}
+.check-row{display:flex;align-items:center;gap:8px;font-size:12px}
+.check{width:13px;height:13px;border-radius:4px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.check-off{width:13px;height:13px;border-radius:4px;border:1.5px solid #cbd5e0;background:#fff;flex-shrink:0}
+.prefs-input{border:1px solid var(--line);background:#fff;border-radius:6px;padding:7px 9px;font-size:11px;color:var(--muted)}
+
+/* why */
+.why{display:flex;gap:64px;padding:72px 0}
+.why-copy{max-width:360px;display:flex;flex-direction:column;gap:14px}
+.why-prose{flex:1;display:flex;flex-direction:column;gap:18px;max-width:620px}
+.why-prose p{font-size:16px;line-height:1.75;color:var(--body);margin:0}
+.why-sign{display:flex;align-items:center;gap:10px;margin-top:6px}
+.why-sign svg{height:22px;width:auto}
+.why-sign a{font-weight:600}
+
+/* open + pricing + faq */
+.open{display:flex;gap:48px;padding:0 0 80px}
+.open-copy{max-width:400px;display:flex;flex-direction:column;gap:14px}
+.open-copy p{font-size:16px;line-height:1.75;color:var(--body);margin:0}
+.open-grid{flex:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.open-card{background:var(--bg-soft);border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:6px}
+.open-card h3{font-weight:600;font-size:15px;margin:0}
+.open-card p{font-size:13px;line-height:1.7;color:var(--body);margin:0}
+.pricing-head{display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;margin-bottom:36px}
+.pricing-head p{font-size:15px;color:var(--body);margin:0}
+.price-card{border:1px solid var(--line);border-radius:14px;padding:32px;display:flex;flex-direction:column;gap:16px;background:#fff}
+.price-card h3{font-size:20px;font-weight:600;margin:0}
+.price{font-size:34px;font-weight:700;margin:0;line-height:1.2}
+.price small{font-size:14px;color:var(--muted);font-weight:500}
+.price-desc{font-size:14px;color:var(--body);line-height:1.6;margin:0}
+.price-list{display:flex;flex-direction:column;gap:10px;font-size:14px;color:var(--body);border-top:1px solid var(--line-soft);padding-top:16px;margin:0}
+.price-list li{display:flex;gap:10px;align-items:flex-start;list-style:none}
+.price-list svg{flex-shrink:0;margin-top:3px}
+.price-cta{display:flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid var(--accent);color:var(--accent);border-radius:99px;padding:13px;font-weight:600;font-size:15px;margin-top:auto}
+.price-cta:hover{text-decoration:none;background:var(--accent-soft)}
+.pro-card{border:1.5px solid var(--accent);position:relative}
+.pro-tag{font-size:11px;font-weight:700;letter-spacing:.06em;color:#fff;background:var(--accent);border-radius:99px;padding:4px 12px;position:absolute;top:-12px;left:32px}
+.pro-head{display:flex;align-items:center;gap:10px}
+.faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 40px}
+.faq-grid>div{border-top:1px solid var(--line);padding-top:18px}
+.faq-grid h3{font-weight:600;font-size:16px;margin:0 0 6px}
+.faq-grid p{font-size:14px;line-height:1.6;color:var(--body);margin:0}
+
+/* closing + footer */
+.closing{display:flex;flex-direction:column;gap:18px;align-items:center;padding:64px 24px;text-align:center}
+.closing img{width:52px;height:52px;border-radius:13px}
+.closing .h2{font-size:34px;color:#ffffffeb}
+.closing-note{font-size:13px;color:var(--muted)}
+footer{border-top:1px solid var(--dark-line)}
+.foot{display:flex;flex-direction:column;gap:20px;padding:32px 0 40px}
+.foot-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.foot-brand{display:flex;align-items:center}
+.foot-links{display:flex;gap:24px;font-size:13px;flex-wrap:wrap}
+.foot-links a{color:var(--faint)}
+.foot-fine{font-size:12px;color:var(--muted);border-top:1px solid var(--dark-line);padding-top:16px}
+
+@media (max-width:1120px){
+  h1{font-size:52px}
+  .hero{flex-direction:column;align-items:center;padding:80px 0 96px;text-align:center}
+  .hero-copy{align-items:center;max-width:640px}
+  .hero-copy{display:flex;flex-direction:column}
+  .badges,.cta-row{justify-content:center}
+  .setup,.anatomy,.privacy,.open,.why{flex-direction:column;gap:40px}
+  .gmail{width:100%;max-width:560px}
+  .grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .setup,.anatomy,.privacy,.open{flex-direction:column}
+  .anatomy-copy,.privacy-copy,.open-copy,.setup-steps{max-width:640px}
+}
+@media (max-width:720px){
+  .pipeline .card::after{display:none!important}
+  h1{font-size:38px}
+  .h2{font-size:26px}
+  .hero{padding:56px 0 64px;gap:40px}
+  .noise{padding:48px 20px;gap:20px}
+  .noise .h2{font-size:25px}
+  .dots{gap:5px}
+  .dots i{width:8px;height:8px;border-radius:2px}
+  .price-card{padding:24px}
+  .privacy,.setup,.anatomy,.open,.why{gap:32px}
+  .closing{padding:48px 20px}
+  .logo-wm{height:21px}
+  .nav-links a:not(.nav-gh){display:none}
+  .grid-3,.grid-2,.grid-4,.faq-grid,.open-grid{grid-template-columns:1fr}
+  .section,.setup,.anatomy{padding:56px 0}
+  .privacy{padding:56px 0}
+  .gm-from{width:64px}
+  .term-body{font-size:12px}
+}
+/* side gutters always win over per-section shorthand paddings */
+.wrap{padding-left:24px;padding-right:24px}
+@media (max-width:400px){.wrap{padding-left:18px;padding-right:18px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<defs>
+<linearGradient id="paint0_linear_75_22" x1="19.8846" y1="19.5329" x2="110.159" y2="171.395" gradientUnits="userSpaceOnUse">
+<stop stop-color="#EB0000"/>
+<stop offset="0.590835" stop-color="#FF4000"/>
+<stop offset="1" stop-color="#FF7300"/>
+</linearGradient>
+<symbol id="im-wordmark" viewBox="0 0 1242 145"><path d="M143.479 7.33589C140.949 2.45114 135.921 -0.425522 130.222 0.0513532C15.0454 10.1326 0.229806 128.672 0.0884292 129.866C-0.760738 137.326 4.60161 144.062 12.0547 144.912C12.5858 144.973 13.0987 145.001 13.6117 145.001C20.4268 145.001 26.3029 139.886 27.0986 132.947C27.1784 132.246 27.617 128.755 28.777 123.455C30.3594 115.803 36.8156 90.9077 51.2596 74.4826C51.2596 74.4826 45.3127 97.7047 48.9994 117.813H63.4379C118.716 117.813 125.406 81.827 130.293 55.5508C132.7 42.6293 134.966 30.4347 141.781 22.3708C145.339 18.1675 146.009 12.2297 143.479 7.33589Z" fill="url(#paint0_linear_75_22)"/>
+<path d="M1212.52 130H1188.52V82.0044C1188.52 60.5414 1200.69 44.1484 1225.53 44.1484C1230.94 44.1484 1236.85 45.1624 1241.08 47.0214V70.3434C1237.02 67.9774 1232.12 66.7944 1227.73 66.7944C1218.26 66.7944 1212.52 72.8784 1212.52 82.8494V130Z" fill="currentColor"/>
+<path d="M1131.23 132.198C1105.2 132.198 1085.6 114.115 1085.6 87.4127C1085.6 63.2457 1103.18 43.3037 1129.03 43.3037C1155.57 43.3037 1170.95 62.9077 1170.95 85.7227V92.8207H1108.75C1110.44 103.975 1119.06 111.411 1131.06 111.411C1140.19 111.411 1147.79 107.017 1151.68 99.2427L1170.1 108.538C1162.83 123.579 1148.98 132.198 1131.23 132.198ZM1109.77 79.4697H1147.12C1146.1 70.8507 1139 64.2597 1128.86 64.2597C1118.39 64.2597 1111.46 71.0197 1109.77 79.4697Z" fill="currentColor"/>
+<path d="M1024.28 132.366C998.589 132.366 978.985 112.424 978.985 88.2575C978.985 62.2315 996.899 43.9795 1022.93 43.9795C1031.38 43.9795 1039.49 47.0215 1045.57 51.9225L1045.74 7.81348H1069.74V88.2575C1069.74 113.607 1050.47 132.366 1024.28 132.366ZM1024.28 109.72C1036.61 109.72 1045.74 100.087 1045.74 88.2575C1045.74 76.4275 1036.61 66.6255 1024.28 66.6255C1011.94 66.6255 1002.98 76.4275 1002.98 88.2575C1002.98 100.087 1011.94 109.72 1024.28 109.72Z" fill="currentColor"/>
+<path d="M919.207 67.3015C905.687 67.3015 899.603 78.2865 899.603 91.1305V130H875.605V88.2575C875.605 63.9215 889.97 43.9795 919.207 43.9795C948.444 43.9795 963.147 63.7525 963.147 88.2575V130H939.149V91.1305C939.149 78.2865 932.896 67.3015 919.207 67.3015Z" fill="currentColor"/>
+<path d="M840.152 33.8397C832.04 33.8397 825.28 27.2487 825.28 18.9677C825.28 10.8557 832.04 4.0957 840.152 4.0957C848.264 4.0957 854.855 10.8557 854.855 18.9677C854.855 27.2487 848.264 33.8397 840.152 33.8397ZM828.153 46.3457H852.151V130.001H828.153V46.3457Z" fill="currentColor"/>
+<path d="M677.597 130.001H652.585L667.964 32.1499C669.992 20.3199 678.273 14.0669 689.765 14.0669C699.905 14.0669 708.524 18.4609 711.228 29.4459L730.325 100.426C730.325 100.933 730.494 100.933 730.494 100.933C730.663 100.933 730.832 100.933 730.832 100.426L749.591 29.9529C752.464 18.9679 761.252 14.0669 771.561 14.0669C782.884 14.0669 790.996 20.4889 792.686 32.6569L806.713 130.001H781.701L770.716 40.7689C770.716 39.9239 770.547 39.4169 769.871 39.4169C769.364 39.4169 769.026 39.7549 768.857 40.4309L747.732 115.805C745.366 124.424 738.606 128.649 730.494 128.649C722.72 128.649 715.453 124.593 713.425 116.312L692.3 40.4309C692.131 39.5859 691.793 39.4169 691.455 39.4169C690.948 39.4169 690.441 39.7549 690.441 40.5999L677.597 130.001Z" fill="currentColor"/>
+<path d="M570.145 130.001H543.274L562.878 98.2287C565.413 94.1727 566.596 91.1307 566.596 88.2577C566.596 85.5537 565.582 82.8497 563.385 79.3007L543.274 46.3457H570.314L584.51 69.8367C585.862 72.0337 587.045 74.5687 587.721 77.1037H594.65C595.326 74.5687 596.509 72.0337 597.861 69.8367L612.057 46.3457H639.097L618.986 79.3007C616.789 82.8497 615.775 85.5537 615.775 88.2577C615.775 91.1307 616.958 94.1727 619.493 98.2287L639.097 130.001H612.226L597.861 106.848C596.34 104.313 594.988 101.44 594.143 98.5667H588.228C587.383 101.44 586.031 104.313 584.51 106.848L570.145 130.001Z" fill="currentColor"/>
+<path d="M489.386 132.198C463.698 132.198 444.094 112.256 444.094 87.9196C444.094 63.7526 463.867 43.8105 489.386 43.8105C515.243 43.8105 534.847 63.9216 534.847 87.9196C534.847 112.256 515.074 132.198 489.386 132.198ZM489.386 109.721C501.723 109.721 510.849 99.9186 510.849 88.0886C510.849 76.2586 501.723 66.4566 489.386 66.4566C477.049 66.4566 468.092 76.2586 468.092 88.0886C468.092 99.9186 477.049 109.721 489.386 109.721Z" fill="currentColor"/>
+<path d="M386.996 132.366C360.97 132.366 341.704 113.607 341.704 88.2575V7.81348H365.702V51.7535C371.955 47.0215 379.898 43.9795 388.348 43.9795C414.374 43.9795 432.288 62.2315 432.288 88.2575C432.288 112.424 412.853 132.366 386.996 132.366ZM386.996 109.72C399.333 109.72 408.29 100.087 408.29 88.2575C408.29 76.4275 399.333 66.6255 386.996 66.6255C374.659 66.6255 365.702 76.4275 365.702 88.2575C365.702 100.087 374.659 109.72 386.996 109.72Z" fill="currentColor"/>
+<path d="M277.7 67.3015C264.18 67.3015 258.096 78.2865 258.096 91.1305V130H234.098V88.2575C234.098 63.9215 248.463 43.9795 277.7 43.9795C306.937 43.9795 321.64 63.7525 321.64 88.2575V130H297.642V91.1305C297.642 78.2865 291.389 67.3015 277.7 67.3015Z" fill="currentColor"/>
+<path d="M184.21 16.2637H208.884V130.001H184.21V16.2637Z" fill="currentColor"/></symbol>
+<symbol id="im-leaf" viewBox="0 0 147 145"><path d="M143.479 7.33589C140.949 2.45114 135.921 -0.425522 130.222 0.0513532C15.0454 10.1326 0.229806 128.672 0.0884292 129.866C-0.760738 137.326 4.60161 144.062 12.0547 144.912C12.5858 144.973 13.0987 145.001 13.6117 145.001C20.4268 145.001 26.3029 139.886 27.0986 132.947C27.1784 132.246 27.617 128.755 28.777 123.455C30.3594 115.803 36.8156 90.9077 51.2596 74.4826C51.2596 74.4826 45.3127 97.7047 48.9994 117.813H63.4379C118.716 117.813 125.406 81.827 130.293 55.5508C132.7 42.6293 134.966 30.4347 141.781 22.3708C145.339 18.1675 146.009 12.2297 143.479 7.33589Z" fill="url(#paint0_linear_75_22)"/></symbol>
+</defs>
+</svg>
+
+<header class="wrap">
+  <nav class="nav" aria-label="Main">
+    <a class="brand" href="/" aria-label="InboxMinder home"><svg class="logo-wm" viewBox="0 0 1242 145" role="img" aria-label="InboxMinder"><use href="#im-wordmark"/></svg></a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#faq">FAQ</a>
+      <a class="nav-gh" href="https://github.com/kelviq/inboxminder">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1.8a10.2 10.2 0 0 0-3.23 19.88c.51.1.7-.22.7-.49v-1.7c-2.84.62-3.44-1.37-3.44-1.37-.46-1.18-1.13-1.5-1.13-1.5-.93-.63.07-.62.07-.62 1.03.07 1.57 1.06 1.57 1.06.91 1.57 2.39 1.11 2.98.85.09-.66.36-1.11.65-1.37-2.27-.26-4.66-1.14-4.66-5.06 0-1.12.4-2.03 1.05-2.75-.1-.26-.46-1.3.1-2.7 0 0 .86-.28 2.8 1.05a9.7 9.7 0 0 1 5.1 0c1.94-1.33 2.8-1.05 2.8-1.05.56 1.4.2 2.44.1 2.7.65.72 1.05 1.63 1.05 2.75 0 3.93-2.4 4.8-4.68 5.05.37.32.7.94.7 1.9v2.81c0 .27.18.6.7.49A10.2 10.2 0 0 0 12 1.8z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+<section class="wrap hero">
+  <div class="hero-copy">
+    <div class="badges">
+      <span class="badge badge-accent">open source</span>
+      <span class="badge badge-plain">runs on your Mac</span>
+    </div>
+    <h1>The <span class="serif">gatekeeper</span> for your inbox.</h1>
+    <p class="hero-sub">An open-source agent that scores every email as it arrives: needs a reply, urgent, or just noise. It runs on your Mac, with your own LLM key, and sorts everything with Gmail labels. Nothing is hosted, ever.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://github.com/kelviq/inboxminder/releases/latest/download/InboxMinder.dmg">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg>
+        Download for Mac
+      </a>
+    </div>
+    <p class="facts">v0.9.3 · macOS 13+ · Apple Silicon · Signed &amp; notarized · Free</p>
+  </div>
+
+  <figure class="gmail" aria-hidden="true">
+    <div class="gm-top">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      <div class="gm-search">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        Search mail
+      </div>
+    </div>
+    <div class="gm-bar">
+      <div class="gm-bar-l">
+        <span class="gm-cb"></span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2" stroke-linecap="round"><path d="M4 9a8 8 0 0 1 14-3"/><path d="M18 2v4h-4"/><path d="M20 15a8 8 0 0 1-14 3"/><path d="M6 22v-4h4"/></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="#5f6368"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+      </div>
+      <span class="gm-count">1&#8211;7 of 128</span>
+    </div>
+    <div class="gm-row unread">
+      <span class="gm-cb"></span>
+      <svg class="star" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bdc1c6" stroke-width="1.8"><path d="M12 3l2.7 5.8 6.3.7-4.7 4.3 1.3 6.2-5.6-3.2-5.6 3.2 1.3-6.2L3 9.5l6.3-.7z"/></svg>
+      <span class="gm-from">Sarah Chen</span>
+      <span class="gm-mid">
+        <span class="chip" style="background:#ff7537;color:#fff">Important</span>
+        <span class="chip" style="background:#4a86e8;color:#fff">Pending</span>
+        <span class="gm-subj"><b>Acme renewal: can we talk pricing?</b> <span style="color:#5f6368">&#8211; We're reviewing vendors this quart&#8230;</span></span>
+      </span>
+      <span class="gm-time">9:14 AM</span>
+    </div>
+    <div class="gm-row">
+      <span class="gm-cb"></span>
+      <svg class="star" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bdc1c6" stroke-width="1.8"><path d="M12 3l2.7 5.8 6.3.7-4.7 4.3 1.3 6.2-5.6-3.2-5.6 3.2 1.3-6.2L3 9.5l6.3-.7z"/></svg>
+      <span class="gm-from">TechBrew</span>
+      <span class="gm-mid">
+        <span class="chip" style="background:#6d9eeb;color:#fff">Newsletter</span>
+        <span class="gm-subj">Your weekly product digest &#8211; 12 launches worth a look&#8230;</span>
+      </span>
+      <span class="gm-time">8:52 AM</span>
+    </div>
+    <div class="gm-row">
+      <span class="gm-cb"></span>
+      <svg class="star" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bdc1c6" stroke-width="1.8"><path d="M12 3l2.7 5.8 6.3.7-4.7 4.3 1.3 6.2-5.6-3.2-5.6 3.2 1.3-6.2L3 9.5l6.3-.7z"/></svg>
+      <span class="gm-from">GitHub</span>
+      <span class="gm-mid">
+        <span class="chip" style="background:#c2c2c2;color:#3c4043">Notification</span>
+        <span class="gm-subj">[ci] Build failed on main &#8211; run 4182 &#8211; 2 checks were not&#8230;</span>
+      </span>
+      <span class="gm-time">8:31 AM</span>
+    </div>
+    <div class="gm-row">
+      <span class="gm-cb"></span>
+      <svg class="star" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bdc1c6" stroke-width="1.8"><path d="M12 3l2.7 5.8 6.3.7-4.7 4.3 1.3 6.2-5.6-3.2-5.6 3.2 1.3-6.2L3 9.5l6.3-.7z"/></svg>
+      <span class="gm-from">Blake Rivers</span>
+      <span class="gm-mid">
+        <span class="chip" style="background:#e07798;color:#fff">Cold Outreach</span>
+        <span class="gm-subj">Quick intro &#8211; we scale founder brands with proven&#8230;</span>
+      </span>
+      <span class="gm-time">7:58 AM</span>
+    </div>
+    <div class="gm-row">
+      <span class="gm-cb"></span>
+      <svg class="star" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bdc1c6" stroke-width="1.8"><path d="M12 3l2.7 5.8 6.3.7-4.7 4.3 1.3 6.2-5.6-3.2-5.6 3.2 1.3-6.2L3 9.5l6.3-.7z"/></svg>
+      <span class="gm-from">Priya Nair</span>
+      <span class="gm-mid">
+        <span class="chip" style="background:#2da2bb;color:#fff">FYI</span>
+        <span class="gm-subj">Team offsite recap notes &#8211; decisions and owners in&#8230;</span>
+      </span>
+      <span class="gm-time">7:40 AM</span>
+    </div>
+    <div class="gm-row unread">
+      <span class="gm-cb"></span>
+      <svg class="star" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bdc1c6" stroke-width="1.8"><path d="M12 3l2.7 5.8 6.3.7-4.7 4.3 1.3 6.2-5.6-3.2-5.6 3.2 1.3-6.2L3 9.5l6.3-.7z"/></svg>
+      <span class="gm-from">Maya Patel</span>
+      <span class="gm-mid">
+        <span class="chip" style="background:#4a86e8;color:#fff">Pending</span>
+        <span class="gm-subj"><b>Re: onboarding call follow-up</b> <span style="color:#5f6368">&#8211; Sounds good, does Thursda&#8230;</span></span>
+      </span>
+      <span class="gm-time">7:26 AM</span>
+    </div>
+    <div class="gm-row">
+      <span class="gm-cb"></span>
+      <svg class="star" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bdc1c6" stroke-width="1.8"><path d="M12 3l2.7 5.8 6.3.7-4.7 4.3 1.3 6.2-5.6-3.2-5.6 3.2 1.3-6.2L3 9.5l6.3-.7z"/></svg>
+      <span class="gm-from">Loom</span>
+      <span class="gm-mid">
+        <span class="chip" style="background:#b99aff;color:#fff">Marketing</span>
+        <span class="gm-subj">40% off annual plans &#8211; this week only, don't miss&#8230;</span>
+      </span>
+      <span class="gm-time">7:12 AM</span>
+    </div>
+  </figure>
+</section>
+
+
+<div class="band-dark">
+  <div class="wrap noise">
+    <div class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <p class="h2">You got 127 emails today. <span class="accent serif" style="white-space:nowrap">Six deserved you.</span></p>
+    <p>The other 121 still demanded a glance, a judgment, a decision, one by one. That's the job InboxMinder takes.</p>
+  </div>
+</div>
+
+<section class="wrap section" id="how">
+  <div class="section-head">
+    <p class="kicker">How it works</p>
+    <h2 class="h2">Watch. Judge. Label. Repeat.</h2>
+    <p class="section-sub">A tiny pipeline that runs every 45 seconds, forever.</p>
+  </div>
+  <div class="grid-3 pipeline">
+    <div class="card">
+      <span class="how-ico"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></span>
+      <h3>It watches</h3>
+      <p>A small background agent polls your Gmail every 45 seconds with a durable queue: a crash, rate limit, or outage can never lose an email.</p>
+    </div>
+    <div class="card">
+      <span class="how-ico"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></span>
+      <h3>It judges</h3>
+      <p>Each new email gets exactly one classifier call to your LLM. The verdict carries reply-worthiness, category, and importance together. Garbage output fails open to "needs you".</p>
+    </div>
+    <div class="card">
+      <span class="how-ico"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12l-8.5 8.5a2 2 0 0 1-2.8 0L3 14.8a2 2 0 0 1 0-2.8L11.5 3.5H18a2 2 0 0 1 2 2z"/><circle cx="15.5" cy="8.5" r="1.2"/></svg></span>
+      <h3>It labels</h3>
+      <p>The verdict becomes a pre-colored Gmail label, on web and mobile, searchable and pinnable. Every decision is visible and one click to undo.</p>
+    </div>
+  </div>
+</section>
+
+<div class="band-soft" id="setup">
+  <div class="wrap setup">
+    <div class="setup-steps">
+      <div class="section-head">
+        <p class="kicker">Setup</p>
+        <h2 class="h2">Five minutes, once.</h2>
+      </div>
+      <div class="step">
+        <div class="step-rail"><span class="step-dot">1</span><span class="step-line"></span></div>
+        <div class="step-body">
+          <h3>Install</h3>
+          <p>Download the Mac app, or <code>npm i -g inboxminder</code>. No account to create.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-rail"><span class="step-dot">2</span><span class="step-line"></span></div>
+        <div class="step-body">
+          <h3>Pick your LLM</h3>
+          <p><code>inboxminder init</code> walks you through it. Anthropic, OpenAI, Google, or Ollama for fully local. Your key goes straight into the macOS Keychain.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-rail"><span class="step-dot">3</span><span class="step-line"></span></div>
+        <div class="step-body">
+          <h3>Create your own Gmail app</h3>
+          <p>A guided one-time trip to Google Cloud Console: enable the Gmail API, create an OAuth client, paste two values. This is the five minutes, and it's why no middleman ever sees your mail. <a href="https://github.com/kelviq/inboxminder/blob/main/docs/gmail-setup.md">Full walkthrough</a>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-rail"><span class="step-dot">4</span></div>
+        <div class="step-body" style="padding-bottom:0">
+          <h3>Go live</h3>
+          <p><code>inboxminder up</code> opens a browser consent, installs the background agent, and that's it. Labels start appearing on the next email.</p>
+        </div>
+      </div>
+    </div>
+    <figure class="term" aria-hidden="true">
+      <div class="term-bar"><span class="dot" style="background:#fc5753"></span><span class="dot" style="background:#fdbc40"></span><span class="dot" style="background:#33c748"></span></div>
+      <div class="term-body">
+        <div><span class="t-p">$</span><span class="t-w"> inboxminder init</span></div>
+        <div class="t-d"><span class="t-g">&#9670;</span> Which LLM provider? <span class="t-l">Anthropic</span></div>
+        <div class="t-d"><span class="t-g">&#9670;</span> API key <span class="t-l">stored in macOS Keychain</span> <span class="t-g">&#10003;</span></div>
+        <div class="t-d"><span class="t-g">&#9670;</span> Gmail OAuth client <span class="t-l">guided, one time</span> <span class="t-g">&#10003;</span></div>
+        <div>&nbsp;</div>
+        <div><span class="t-p">$</span><span class="t-w"> inboxminder up</span></div>
+        <div class="t-d">Step 1/2: Gmail authorization <span class="t-g">&#10003;</span></div>
+        <div class="t-d">Step 2/2: Installing the background agent <span class="t-g">&#10003;</span></div>
+        <div>&nbsp;</div>
+        <div class="t-g">Gatekeeper installed: minding your inbox</div>
+        <div class="t-m">Prefer clicking? The Mac app runs the same steps.</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+<section class="wrap anatomy">
+  <div class="anatomy-copy">
+    <p class="kicker">Anatomy of a decision</p>
+    <h2 class="h2">One email, one verdict.</h2>
+    <p>Each email gets exactly one classifier call. The verdict carries reply-worthiness, category, and importance together, and if the model ever returns garbage, the email is marked as needing you. Errors can never archive or mis-file mail.</p>
+    <p class="fine">Before a Cold Outreach label sticks, the guard checks the sender against everyone you have ever written to.</p>
+  </div>
+  <figure class="codeblock" aria-hidden="true">
+    <div class="t-m">// new mail: "Quick intro: we scale founder brands"</div>
+    <div class="t-d">guard check <span class="t-l">sender not in correspondents ledger</span></div>
+    <div class="t-d">classify <span class="t-l">1 call, ~1s</span></div>
+    <div class="t-w">{</div>
+    <div class="t-w">&#160;&#160;"reply": <span class="t-p">false</span>,</div>
+    <div class="t-w">&#160;&#160;"confidence": <span style="color:#ffc543">"sure"</span>,</div>
+    <div class="t-w">&#160;&#160;"category": <span style="color:#ffc543">"cold-outreach"</span>,</div>
+    <div class="t-w">&#160;&#160;"reason": <span style="color:#ffc543">"unsolicited link-building pitch"</span></div>
+    <div class="t-w">}</div>
+    <div class="t-d">label <span class="t-l">Cold Outreach applied</span></div>
+  </figure>
+</section>
+
+<div class="band-soft" id="features" style="background:#fff">
+  <section class="wrap section">
+    <div class="section-head">
+      <p class="kicker">What it does</p>
+      <h2 class="h2">Every email, read and sorted.</h2>
+      <p class="section-sub">All of it in the free gatekeeper. Every behavior below is a config knob or a Preferences toggle.</p>
+    </div>
+    <div class="grid-4">
+      <div class="card card-feature">
+        <span class="f-ico"><svg class="icon-accent" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12l-8.5 8.5a2 2 0 0 1-2.8 0L3 14.8a2 2 0 0 1 0-2.8L11.5 3.5H18a2 2 0 0 1 2 2z"/><circle cx="15.5" cy="8.5" r="1.2"/></svg></span>
+        <h3>Five triage categories</h3>
+        <p>Newsletter, Notification, Marketing, Cold Outreach, FYI: applied as pre-colored Gmail labels.</p>
+      </div>
+      <div class="card card-feature">
+        <span class="f-ico warm"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#aa4d00" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6"/><circle cx="12" cy="16.5" r="0.5" fill="#aa4d00"/></svg></span>
+        <h3>Important tier</h3>
+        <p>Urgent, blocking mail gets an Important label and a quiet notification. Subjects only, never contents.</p>
+      </div>
+      <div class="card card-feature">
+        <span class="f-ico"><svg class="icon-accent" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9a8 8 0 0 1 14-3"/><path d="M18 2v4h-4"/><path d="M20 15a8 8 0 0 1-14 3"/><path d="M6 22v-4h4"/></svg></span>
+        <h3>Pending and Resolved</h3>
+        <p>Reply-worthy threads carry Pending; the moment your reply goes out, they flip to Resolved.</p>
+      </div>
+      <div class="card card-feature">
+        <span class="f-ico"><svg class="icon-accent" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9"/><path d="M10 13h4"/></svg></span>
+        <h3>Opt-in archiving</h3>
+        <p>Junk tiers can skip the inbox; the label always stays as an audit trail. Nothing is ever deleted.</p>
+      </div>
+      <div class="card card-feature">
+        <span class="f-ico"><svg class="icon-accent" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.1-7 9.5-4-1.4-7-5-7-9.5V6z"/><path d="M9 12l2 2 4-4"/></svg></span>
+        <h3>Cold-outreach guard</h3>
+        <p>Anyone you have ever written to can never be labeled cold. Teach it what a warm intro means to you.</p>
+      </div>
+      <div class="card card-feature">
+        <span class="f-ico"><svg class="icon-accent" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/></svg></span>
+        <h3>Per-sender rules</h3>
+        <p>"Always important." "Never worth a reply." Matched on the address; display names are spoofable and never match.</p>
+      </div>
+      <div class="card card-feature">
+        <span class="f-ico"><svg class="icon-accent" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16"/><path d="M6 16l8.5-8.5a2.1 2.1 0 0 1 3 3L9 19l-4 1z"/></svg></span>
+        <h3>Every label is yours</h3>
+        <p>Rename or recolor any label from config or Preferences. Labels are write-only; hand-edit them freely.</p>
+      </div>
+      <div class="card card-feature">
+        <span class="f-ico"><svg class="icon-accent" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+        <h3>One call per email</h3>
+        <p>One LLM call per email on your own key, typically a few cents a day. Zero with a local model.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<section class="wrap section" style="padding-top:0">
+  <div class="section-head">
+    <p class="kicker">Why not just&#8230;</p>
+    <h2 class="h2">An honest comparison.</h2>
+  </div>
+  <div class="grid-3">
+    <div class="card">
+      <div class="cmp-head"><span class="cmp-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18l-7 8v5l-4 2v-7z"/></svg></span><h3>Gmail filters</h3></div>
+      <p>Free and instant, but they match strings, not meaning. You write the rules, they break silently, and no rule can judge whether an email deserves you.</p>
+    </div>
+    <div class="card">
+      <div class="cmp-head"><span class="cmp-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 19a4.5 4.5 0 0 0 .4-9A7 7 0 0 0 4.3 12.7 4 4 0 0 0 6 19z"/></svg></span><h3>Hosted AI email tools</h3></div>
+      <p>Genuinely smart, and easier to set up. The trade: a company's servers read all of your mail, and the judgment lives in their cloud, on their subscription, until it doesn't.</p>
+    </div>
+    <div class="card compare-hi">
+      <div class="cmp-head"><span class="cmp-ico"><svg width="16" height="16" viewBox="0 0 147 145" aria-hidden="true"><use href="#im-leaf"/></svg></span><h3>InboxMinder</h3></div>
+      <p>Real judgment, run locally. Open source, your own key, five guided setup minutes as the price of nobody else ever touching your mail.</p>
+    </div>
+  </div>
+</section>
+
+<div class="band-dark" id="privacy">
+  <div class="wrap privacy">
+    <div class="privacy-copy">
+      <p class="kicker">Privacy, plainly</p>
+      <h2 class="h2">Honesty over marketing.</h2>
+      <p>The email being classified (sender, subject, the first part of the body) goes to <strong>the LLM provider you configure</strong>. That is the one external data flow, and you choose who it is. Point it at Ollama and mail never leaves your machine at all.</p>
+      <p>Everything else stays on your Mac: OAuth tokens and API keys in the macOS Keychain, state in local SQLite, logs that carry subjects and senders, never bodies.</p>
+    </div>
+    <div class="privacy-cards">
+      <div class="privacy-card">
+        <span class="p-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff7040" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1.5-1.5"/></svg></span>
+        <span>Don't trust the paragraph on the left: <a href="https://github.com/kelviq/inboxminder">read the code</a>. It's small on purpose.</span>
+      </div>
+      <div class="privacy-card">
+        <span class="p-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff7040" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.1-7 9.5-4-1.4-7-5-7-9.5V6z"/></svg></span>
+        <span>Every decision is a visible Gmail label: reversible in one click, hand-editable, never hidden state.</span>
+      </div>
+      <div class="privacy-card">
+        <span class="p-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff7040" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18.4 18.4A9 9 0 0 1 5.6 5.6m2.2-1.5A9 9 0 0 1 19.9 16.2"/><path d="M3 3l18 18"/></svg></span>
+        <span>No code path can send, delete, or mark spam. Worst-case failure: a wrong label you remove in one click.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="wrap section">
+  <div class="section-head">
+    <p class="kicker">The menu-bar app</p>
+    <h2 class="h2">A quiet native companion.</h2>
+    <p style="font-size:16px;color:var(--body);max-width:620px;line-height:1.55;margin:0">Status at a glance, pause and resume, a feed of what got triaged, and a Preferences window for every setting, so you never have to touch a config file. Optional: the gatekeeper runs fine without it.</p>
+  </div>
+  <div class="grid-2">
+    <div class="mock-frame tint">
+      <figure class="popover" aria-hidden="true" style="margin:0">
+        <div class="pop-head">
+          <span class="dot" style="width:9px;height:9px;background:#16a766"></span>
+          <div style="flex:1">
+            <div class="pop-title">Minding your inbox</div>
+            <div class="pop-sub">Checked 12s ago · you@yourdomain.com</div>
+          </div>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#718096" stroke-width="2" stroke-linecap="round"><path d="M10 5v14"/><path d="M15 5v14"/></svg>
+        </div>
+        <div class="pop-label">RECENT ACTIVITY</div>
+        <div class="pop-rows">
+          <div class="pop-row">
+            <span class="pop-ico" style="background:#fff1ec"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ff7537" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v6"/></svg></span>
+            <span class="pop-subj">Acme renewal: can we talk pricing?</span>
+            <span class="pop-time">2m</span>
+          </div>
+          <div class="pop-row" style="background:var(--bg-soft)">
+            <span class="pop-ico" style="background:#eef3fd"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6d9eeb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M8 10h8M8 14h5"/></svg></span>
+            <span class="pop-subj">Your weekly product digest</span>
+            <span class="pop-time">9m</span>
+          </div>
+          <div class="pop-row">
+            <span class="pop-ico" style="background:#fdeef3"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#e07798" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18"/></svg></span>
+            <span class="pop-subj">Quick intro: we scale founder brands</span>
+            <span class="pop-time">31m</span>
+          </div>
+          <div class="pop-row">
+            <span class="pop-ico" style="background:#e9f6f9"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#2da2bb" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="0.6" fill="#2da2bb"/></svg></span>
+            <span class="pop-subj">Team offsite recap notes</span>
+            <span class="pop-time">1h</span>
+          </div>
+        </div>
+        <div class="pop-foot">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#718096" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#718096" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.7a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.5A7 7 0 0 0 5 12"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#718096" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#718096" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-6-6-6"/><path d="M12 19h8"/></svg>
+        </div>
+      </figure>
+    </div>
+    <div class="mock-frame">
+      <figure class="prefs" aria-hidden="true" style="margin:0">
+        <div class="prefs-bar">
+          <span class="dot" style="background:#fc5753;width:9px;height:9px"></span>
+          <span class="dot" style="background:#fdbc40;width:9px;height:9px"></span>
+          <span class="dot" style="background:#33c748;width:9px;height:9px"></span>
+          <span class="prefs-title">Preferences</span>
+        </div>
+        <div class="prefs-tabs">
+          <span class="prefs-tab-on">Gatekeeper</span><span class="prefs-tab">Rules</span><span class="prefs-tab">Model</span><span class="prefs-tab">General</span>
+        </div>
+        <div class="prefs-body">
+          <div class="prefs-group">
+            <div class="prefs-row">
+              <div><div class="prefs-h">Triage every email</div><div class="prefs-s">One classifier call per email</div></div>
+              <span class="toggle"><span class="knob"></span></span>
+            </div>
+          </div>
+          <div class="prefs-group">
+            <div class="prefs-k">SKIP THE INBOX</div>
+            <div class="check-row"><span class="check"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></span>Newsletters</div>
+            <div class="check-row"><span class="check"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></span>Marketing</div>
+            <div class="check-row" style="color:var(--body)"><span class="check-off"></span>Cold outreach</div>
+          </div>
+          <div class="prefs-group">
+            <div class="prefs-h">What counts as warm?</div>
+            <div class="prefs-input">founders asking about my product are never cold</div>
+          </div>
+        </div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="wrap open">
+  <div class="open-copy">
+    <p class="kicker">Built in the open</p>
+    <h2 class="h2">Watch it grow.</h2>
+    <p>Development happens on GitHub: issues, releases, and the changelog are public. Star the repo to follow along.</p>
+  </div>
+  <div class="open-grid">
+    <div class="open-card">
+      <div class="head"><h3>Inbox reordering</h3><span class="plan-tag">PLANNED</span></div>
+      <p>A browser extension that sorts Gmail by importance score in place: the one thing the API can't do.</p>
+    </div>
+    <div class="open-card">
+      <div class="head"><h3>Daily digest</h3><span class="plan-tag">PLANNED</span></div>
+      <p>A morning summary of what was triaged while you slept.</p>
+    </div>
+    <div class="open-card">
+      <div class="head"><h3>More providers</h3><span class="plan-tag">PLANNED</span></div>
+      <p>IMAP and Outlook support, so any mailbox gets a gatekeeper.</p>
+    </div>
+    <div class="open-card">
+      <div class="head"><h3>The v2 assistant</h3><span class="plan-tag">V2</span></div>
+      <p>Replies drafted in your voice, grounded in your docs: the assistant our own inbox already runs on.</p>
+    </div>
+  </div>
+</section>
+
+<div class="band-soft">
+  <div class="wrap why">
+    <div class="why-copy">
+      <p class="kicker">Why we built it</p>
+      <h2 class="h2">Scratching our own inbox.</h2>
+    </div>
+    <div class="why-prose">
+      <p>We're a small team at <a href="https://www.kelviq.com">Kelviq</a>, and Gmail is our customer support desk. We built InboxMinder to make that job easier, and it now runs our inbox end to end.</p>
+      <p>The full version does virtually everything a support person would: it drafts replies exactly the way we'd write them, categorizes every email, scores urgency and notifies us when something can't wait, and reminds us when a thread needs a follow-up.</p>
+      <p>That version is still tightly coupled to our internal workflow, so we're opening it up in stages. The gatekeeper you can download today is the first cut, and it stays free forever. The assistant is what's coming next.</p>
+      <p class="why-sign"><svg viewBox="0 0 147 145" aria-hidden="true"><use href="#im-leaf"/></svg><span>Built in the open by <a href="https://www.kelviq.com">Kelviq</a></span></p>
+    </div>
+  </div>
+</div>
+
+<div style="border-top:1px solid var(--line)">
+  <section class="wrap section" id="pricing">
+    <div class="pricing-head">
+      <h2 class="h2">Free forever. v2 is coming.</h2>
+      <p>Features never move from free to paid. That is the promise.</p>
+    </div>
+    <div class="grid-2">
+      <div class="price-card">
+        <h3>The Gatekeeper</h3>
+        <p class="price">Free <small>forever · open source</small></p>
+        <p class="price-desc">The full triage agent. Every email read locally, judged once, and sorted with Gmail labels.</p>
+        <ul class="price-list">
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Five triage categories, pre-colored labels</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Important tier with quiet notifications</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Opt-in archiving with audit trail</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Cold-outreach guard and per-sender rules</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Menu-bar app with full Preferences</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Signed, notarized, auto-updating</li>
+        </ul>
+        <a class="price-cta" href="https://github.com/kelviq/inboxminder/releases/latest/download/InboxMinder.dmg">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg>
+          Download for Mac
+        </a>
+      </div>
+      <div class="price-card pro-card">
+        <span class="pro-tag">COMING</span>
+        <h3>InboxMinder v2</h3>
+        <p class="price">The assistant tier</p>
+        <p class="price-desc">Everything our internal version already does for our own support inbox. Still local. Still yours.</p>
+        <ul class="price-list">
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Reply drafts written in your voice</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Answers grounded in your docs and past mail</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Integrations: Notion, Linear, and Slack</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Follow-up reminders when a thread goes quiet</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Learns your voice from every edit you make</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Everything in the free Gatekeeper</li>
+        </ul>
+        <a class="price-cta" style="background:var(--accent);color:#fff" href="mailto:hi@kelviq.com?subject=InboxMinder%20v2%20waitlist">Get notified at launch</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<section class="wrap section" id="faq">
+  <div class="section-head">
+    <p class="kicker">FAQ</p>
+    <h2 class="h2">Fair questions.</h2>
+  </div>
+  <div class="faq-grid">
+    <div>
+      <h3>Does it ever send or delete anything?</h3>
+      <p>No, structurally: there is no code path that sends, deletes, or marks spam. It writes labels and, only if you opt in per category, moves junk out of the inbox with the label kept as the audit trail.</p>
+    </div>
+    <div>
+      <h3>What does it cost to run?</h3>
+      <p>One LLM call per email on your own key, typically a few cents a day at founder-inbox volume. With a local model via Ollama: nothing.</p>
+    </div>
+    <div>
+      <h3>Which LLMs work?</h3>
+      <p>Anthropic, OpenAI, Google, or any OpenAI-compatible endpoint, including Ollama and LM Studio for a fully-local setup.</p>
+    </div>
+    <div>
+      <h3>Why do I need my own Google OAuth client?</h3>
+      <p>Because a shared one would mean a middleman with access to your mail. Gmail restricts these scopes heavily; bring-your-own-client is what every self-hosted Gmail tool does. It takes about five guided minutes, once. <a href="https://github.com/kelviq/inboxminder/blob/main/docs/gmail-setup.md">Here's the full walkthrough</a>.</p>
+    </div>
+    <div>
+      <h3>How do updates work?</h3>
+      <p>The Mac app updates itself: signed builds, consent-based, never silent. The CLI updates through npm and only ever notifies you when a new version exists.</p>
+    </div>
+    <div>
+      <h3>Can I fork it?</h3>
+      <p>Yes, the AGPL-3.0 license guarantees it. Just rename your fork (the InboxMinder name and logo stay with the project) and keep it open source.</p>
+    </div>
+  </div>
+</section>
+
+<div class="band-dark">
+  <div class="wrap closing">
+    <svg class="logo-leaf" viewBox="0 0 147 145" aria-hidden="true"><use href="#im-leaf"/></svg>
+    <p class="h2">Give your inbox a <span class="serif">minder</span>.</p>
+    <div class="cta-row" style="justify-content:center">
+      <a class="btn btn-primary" href="https://github.com/kelviq/inboxminder/releases/latest/download/InboxMinder.dmg">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg>
+        Download for Mac
+      </a>
+      <a class="btn btn-ghost" href="https://github.com/kelviq/inboxminder">Star on GitHub</a>
+    </div>
+    <p class="closing-note">Free and open source · Signed and notarized · Apple Silicon</p>
+  </div>
+</div>
+</main>
+
+<div class="band-dark">
+<footer>
+  <div class="wrap foot">
+    <div class="foot-row">
+      <span class="foot-brand"><svg class="logo-wm-s" viewBox="0 0 1242 145" role="img" aria-label="InboxMinder"><use href="#im-wordmark"/></svg></span>
+      <nav class="foot-links" aria-label="Footer">
+        <a href="https://github.com/kelviq/inboxminder">GitHub</a>
+        <a href="https://github.com/kelviq/inboxminder/blob/main/CHANGELOG.md">Changelog</a>
+        <a href="https://github.com/kelviq/inboxminder/blob/main/TRADEMARK.md">Trademark</a>
+        <a href="https://www.kelviq.com">Kelviq</a>
+      </nav>
+    </div>
+    <p class="foot-fine">AGPL-3.0 · Built by Kelviq · Running on the author's own inbox since July 2026.</p>
+  </div>
+</footer>
+</div>
+
+</body>
+</html>
