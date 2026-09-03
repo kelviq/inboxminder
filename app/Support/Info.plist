@@ -10,6 +10,8 @@
   <string>InboxMinder</string>
   <key>CFBundleDisplayName</key>
   <string>InboxMinder</string>
+  <key>CFBundleIconFile</key>
+  <string>AppIcon</string>
   <key>CFBundleExecutable</key>
   <string>InboxMinderBar</string>
   <key>CFBundlePackageType</key>
