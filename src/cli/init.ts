@@ -18,7 +18,7 @@ export function registerInitCommand(program: Command): void {
     )
     .option(
       "--answers-stdin",
-      "non-interactive: read an answers JSON document from stdin and write config.toml (secrets excluded — store those via set-key --stdin)",
+      "non-interactive: read an answers JSON document from stdin and write config.toml (secrets excluded; store those via set-key --stdin)",
     )
     .option(
       "--force",
@@ -30,7 +30,7 @@ export function registerInitCommand(program: Command): void {
         // decoration.
         if (existsSync(CONFIG_PATH) && !opts.force) {
           console.error(
-            `${CONFIG_PATH} already exists — pass --force to overwrite (Keychain secrets are kept either way)`,
+            `${CONFIG_PATH} already exists; pass --force to overwrite (Keychain secrets are kept either way)`,
           );
           process.exitCode = 1;
           return;
@@ -43,7 +43,7 @@ export function registerInitCommand(program: Command): void {
           ConfigSchema.parse(parse(tomlText));
         } catch (err) {
           console.error(
-            `init --answers-stdin: invalid answers — nothing written:\n${err instanceof Error ? err.message : String(err)}`,
+            `init --answers-stdin: invalid answers; nothing written:\n${err instanceof Error ? err.message : String(err)}`,
           );
           process.exitCode = 1;
           return;
@@ -55,7 +55,7 @@ export function registerInitCommand(program: Command): void {
       p.intro("inboxminder setup");
       if (existsSync(CONFIG_PATH)) {
         const overwrite = await p.confirm({
-          message: `${CONFIG_PATH} already exists — overwrite it? (Keychain secrets are kept either way)`,
+          message: `${CONFIG_PATH} already exists; overwrite it? (Keychain secrets are kept either way)`,
           initialValue: false,
         });
         if (p.isCancel(overwrite) || !overwrite) return p.cancel("Aborted");
@@ -71,7 +71,7 @@ export function registerInitCommand(program: Command): void {
           {
             value: "openai-compatible",
             label:
-              "OpenAI-compatible (Groq, Ollama, LM Studio... — fully local possible)",
+              "OpenAI-compatible (Groq, Ollama, LM Studio...; fully local possible)",
           },
         ],
       });
@@ -90,7 +90,7 @@ export function registerInitCommand(program: Command): void {
       // --- Gmail OAuth client (optional here; can be done later via set-key) ---
       const gmailNow = await p.confirm({
         message:
-          "Set up the Gmail OAuth client now? (Needs a client ID + secret from Google Cloud Console — see README. You can skip and run `inboxminder set-key` later.)",
+          "Set up the Gmail OAuth client now? (Needs a client ID + secret from Google Cloud Console; see README. You can skip and run `inboxminder set-key` later.)",
         initialValue: true,
       });
       let gmailDone = false;
@@ -114,7 +114,7 @@ export function registerInitCommand(program: Command): void {
         ConfigSchema.parse(parse(tomlText));
       } catch (err) {
         p.log.error(
-          `Generated config failed validation — nothing was written:\n${err instanceof Error ? err.message : String(err)}`,
+          `Generated config failed validation; nothing was written:\n${err instanceof Error ? err.message : String(err)}`,
         );
         return;
       }

@@ -83,11 +83,11 @@ export async function maybeCheckForUpdate(cfg: Config): Promise<void> {
         if (cfg.email.notifications)
           notify(
             "InboxMinder",
-            `Update available (${version}) — npm update -g inboxminder`,
+            `Update available (${version}); npm update -g inboxminder`,
           );
       }
     }
   } catch (err) {
-    log.warn({ err }, "update check failed — continuing");
+    log.warn({ err }, "update check failed; continuing");
   }
 }

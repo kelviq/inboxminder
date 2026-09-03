@@ -21,7 +21,7 @@ export function registerConfigCommand(program: Command): void {
   program
     .command("config <action>")
     .description(
-      "Read/update config.toml through a validated funnel. get-settings prints the settings JSON; set-settings --stdin applies one — a change applies to the daemon after a restart. Keys not in the document are preserved. Create config with `inboxminder init` first.",
+      "Read/update config.toml through a validated funnel. get-settings prints the settings JSON; set-settings --stdin applies one; a change applies to the daemon after a restart. Keys not in the document are preserved. Create config with `inboxminder init` first.",
     )
     .option("--stdin", "read the JSON document from stdin")
     .action(async (action: string, opts: { stdin?: boolean }) => {
@@ -35,7 +35,7 @@ export function registerConfigCommand(program: Command): void {
         }
         const raw = readRawConfig();
         if (raw === null) {
-          console.error(`No config at ${CONFIG_PATH} — run: inboxminder init`);
+          console.error(`No config at ${CONFIG_PATH}; run: inboxminder init`);
           process.exitCode = 1;
           return;
         }
@@ -55,11 +55,11 @@ export function registerConfigCommand(program: Command): void {
         }
         saveConfigToml(applySettings(raw, parsed.data));
         console.log(
-          `Settings updated in ${CONFIG_PATH} — restart the agent to apply: inboxminder agent install`,
+          `Settings updated in ${CONFIG_PATH}; restart the agent to apply: inboxminder agent install`,
         );
       } else {
         console.error(
-          `Unknown action "${action}" — use get-settings | set-settings`,
+          `Unknown action "${action}"; use get-settings | set-settings`,
         );
         process.exitCode = 1;
       }

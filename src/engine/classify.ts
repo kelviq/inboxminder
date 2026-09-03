@@ -40,7 +40,7 @@ const BASE_LINES = [
   "receipts and order/payment confirmations, calendar invite responses (accepted/declined),",
   "shipping updates, OTP/verification codes, out-of-office autoreplies, mass marketing.",
   "Answer YES for anything where a human is asking, requesting, introducing, or awaiting the",
-  "recipient — when unsure, answer YES (an unnecessary draft is cheaper than a missed reply).",
+  "recipient; when unsure, answer YES (an unnecessary draft is cheaper than a missed reply).",
   'Also report confidence: "sure" normally, "unsure" only when the call is genuinely borderline.',
 ];
 
@@ -123,7 +123,7 @@ export function parseVerdict(text: string): ReplyVerdict {
   return {
     reply: true,
     confidence: "sure",
-    reason: "unparseable verdict — failing open",
+    reason: "unparseable verdict; failing open",
   };
 }
 
@@ -157,11 +157,11 @@ export async function classifyReplyWorthiness(
     });
     return parseVerdict(text);
   } catch (err) {
-    log.warn({ err }, "classification failed — failing open to draft");
+    log.warn({ err }, "classification failed; failing open to draft");
     return {
       reply: true,
       confidence: "sure",
-      reason: "classifier error — failing open",
+      reason: "classifier error; failing open",
     };
   }
 }

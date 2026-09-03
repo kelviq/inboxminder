@@ -79,12 +79,12 @@ describe("[triage] config", () => {
       archive: [],
       coldOutreachHint: "",
       labels: {
-        newsletter: "InboxMinder/Newsletter",
-        notification: "InboxMinder/Notification",
-        marketing: "InboxMinder/Marketing",
-        "cold-outreach": "InboxMinder/Cold Outreach",
-        fyi: "InboxMinder/FYI",
-        important: "InboxMinder/Important",
+        newsletter: "Newsletter",
+        notification: "Notification",
+        marketing: "Marketing",
+        "cold-outreach": "Cold Outreach",
+        fyi: "FYI",
+        important: "Important",
       },
     });
   });
@@ -109,7 +109,12 @@ describe("[triage] config", () => {
     await watcher.runWatchTick(
       cfgWith({ triage: { labels: { newsletter: "News/Weekly" } } }),
     );
-    expect(setThreadLabels).toHaveBeenCalledWith("t-twc", ["News/Weekly"], []);
+    expect(setThreadLabels).toHaveBeenCalledWith(
+      "t-twc",
+      ["News/Weekly"],
+      [],
+      expect.anything(),
+    );
   });
 });
 
@@ -121,8 +126,9 @@ describe("category labeling", () => {
     await watcher.runWatchTick(cfgWith());
     expect(setThreadLabels).toHaveBeenCalledWith(
       "t-tw1",
-      ["InboxMinder/Notification"],
+      ["Notification"],
       [],
+      expect.anything(),
     );
     // Marked handled so crash-window re-reads don't re-classify.
     expect(state.alreadyHandled("tw1")).toBe(true);
@@ -137,8 +143,9 @@ describe("category labeling", () => {
     );
     expect(setThreadLabels).toHaveBeenCalledWith(
       "t-tw2",
-      ["InboxMinder/Marketing"],
+      ["Marketing"],
       ["INBOX"],
+      expect.anything(),
     );
   });
 
@@ -151,8 +158,9 @@ describe("category labeling", () => {
     );
     expect(setThreadLabels).toHaveBeenCalledWith(
       "t-tw3",
-      ["InboxMinder/FYI"],
+      ["FYI"],
       [],
+      expect.anything(),
     );
   });
 
@@ -166,8 +174,9 @@ describe("category labeling", () => {
     expect(setThreadLabels).toHaveBeenCalledTimes(1);
     expect(setThreadLabels).toHaveBeenCalledWith(
       "t-tw4",
-      ["InboxMinder/Pending"],
-      ["InboxMinder/Resolved"],
+      ["Pending"],
+      ["Resolved"],
+      expect.anything(),
     );
   });
 
@@ -180,10 +189,11 @@ describe("category labeling", () => {
     );
     expect(setThreadLabels).toHaveBeenCalledWith(
       "t-tw5",
-      ["InboxMinder/Important"],
+      ["Important"],
       [],
+      expect.anything(),
     );
-    expect(notify).toHaveBeenCalledWith("InboxMinder", "Important — Subj tw5");
+    expect(notify).toHaveBeenCalledWith("InboxMinder", "Important: Subj tw5");
   });
 
   it("not-important reply-worthy mail never notifies", async () => {
@@ -215,8 +225,9 @@ describe("known-correspondent guard", () => {
     await watcher.runWatchTick(cfgWith());
     expect(setThreadLabels).toHaveBeenCalledWith(
       "t-tw10",
-      ["InboxMinder/Cold Outreach"],
+      ["Cold Outreach"],
       [],
+      expect.anything(),
     );
   });
 
@@ -251,8 +262,9 @@ describe("known-correspondent guard", () => {
     await watcher.runWatchTick(cfgWith());
     expect(setThreadLabels).toHaveBeenCalledWith(
       "t-tw14",
-      ["InboxMinder/FYI"],
+      ["FYI"],
       [],
+      expect.anything(),
     );
   });
 });

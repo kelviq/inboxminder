@@ -27,7 +27,7 @@ export function assertValidProfileName(name: string): void {
   }
   if (!NAME_RE.test(name)) {
     throw new Error(
-      `Invalid profile name "${name}" — use 1-32 chars of lowercase letters, digits, and hyphens (must start with a letter or digit).`,
+      `Invalid profile name "${name}"; use 1-32 chars of lowercase letters, digits, and hyphens (must start with a letter or digit).`,
     );
   }
 }

@@ -1,8 +1,7 @@
 # Trademark notice
 
-"InboxMinder", the InboxMinder logo, and the `InboxMinder/*` label naming
-are trade names of Kelviq. The AGPL-3.0 license covers the *code*; it does
-not grant rights to the name.
+"InboxMinder" and the InboxMinder logo are trade names of Kelviq. The
+AGPL-3.0 license covers the *code*; it does not grant rights to the name.
 
 You may:
 
@@ -13,7 +12,7 @@ You may:
 You may not, without written permission:
 
 - Distribute a modified version, fork, or derived service under the
-  "InboxMinder" name or a confusingly similar one — rename your fork.
+  "InboxMinder" name or a confusingly similar one; rename your fork.
 - Use the name or logo in a way that implies endorsement by, or
   affiliation with, Kelviq.
 

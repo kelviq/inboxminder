@@ -28,7 +28,7 @@ const program = new Command();
 program
   .name("inboxminder")
   .description(
-    "Open-source agent gatekeeper for your inbox — every email read locally, scored, and triaged",
+    "Open-source agent gatekeeper for your inbox; every email read locally, scored, and triaged",
   )
   // Consumed by profile-boot's argv scan before commander runs; declared
   // here so help is honest. Place it BEFORE the command name.

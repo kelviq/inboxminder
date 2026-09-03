@@ -16,17 +16,17 @@ export async function goLive(): Promise<void> {
   const cfg = loadConfig();
 
   if (getSecret("gmail-tokens")) {
-    p.log.success("Step 1/2 — Gmail: already authorized, skipping.");
+    p.log.success("Step 1/2: Gmail: already authorized, skipping.");
   } else {
-    p.log.step("Step 1/2 — Gmail authorization");
+    p.log.step("Step 1/2: Gmail authorization");
     p.log.info(
-      "InboxMinder talks to Gmail through your own Google OAuth app — no middleman ever sees your mail. Opening a one-time browser consent…",
+      "InboxMinder talks to Gmail through your own Google OAuth app; no middleman ever sees your mail. Opening a one-time browser consent…",
     );
     await mailProvider(cfg).setup();
-    p.log.success("Gmail authorized — tokens stored in your macOS Keychain.");
+    p.log.success("Gmail authorized; tokens stored in your macOS Keychain.");
   }
 
-  p.log.step("Step 2/2 — Installing the background agent");
+  p.log.step("Step 2/2: Installing the background agent");
   p.log.info(
     "Registering with launchd, macOS's service manager: the gatekeeper runs invisibly with no terminal, survives reboots, and reads + triages every new email locally.",
   );
@@ -40,7 +40,7 @@ export async function goLive(): Promise<void> {
   }
   await installAgent();
   const { notify } = await import("../notify.js");
-  notify("InboxMinder", "Gatekeeper installed — minding your inbox");
+  notify("InboxMinder", "Gatekeeper installed; minding your inbox");
   p.log.success(
     `InboxMinder is live. Every new email gets read locally and triaged: category labels appear in Gmail (InboxMinder/Newsletter, /Cold Outreach, …), urgent mail gets InboxMinder/Important, and nothing is ever sent or deleted. Your data stays on this Mac (${DATA_DIR}).`,
   );

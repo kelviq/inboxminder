@@ -20,7 +20,7 @@ export function registerSetKeyCommand(program: Command): void {
         // purpose, no clack decoration.
         const value = secretFromStdinText(await readStdinText());
         if (!value) {
-          console.error(`set-key --stdin: empty input — nothing stored`);
+          console.error(`set-key --stdin: empty input; nothing stored`);
           process.exitCode = 1;
           return;
         }

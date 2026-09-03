@@ -22,15 +22,15 @@ export function registerAgentCommand(program: Command): void {
       if (action === "pause") {
         setWatchPaused(true);
         p.log.success(
-          "Paused — takes effect within one poll interval. Mail arriving while paused is drafted on resume. Resume: inboxminder agent resume",
+          "Paused; takes effect within one poll interval. Mail arriving while paused is drafted on resume. Resume: inboxminder agent resume",
         );
       } else if (action === "resume") {
         setWatchPaused(false);
-        p.log.success("Resumed — watching again within one poll interval.");
+        p.log.success("Resumed; watching again within one poll interval.");
       } else if (action === "install") {
         const { plistPath, cliPath } = await installAgent();
         const { notify } = await import("../notify.js");
-        notify("InboxMinder", "Agent installed — watching your inbox");
+        notify("InboxMinder", "Agent installed; watching your inbox");
         p.log.success(`Installed ${plistPath}`);
         p.log.message(
           `Runs: ${cliPath} watch (survives reboots)\nLogs: ${DATA_DIR}/logs/watch.log\nCheck anytime: inboxminder agent status`,
@@ -64,7 +64,7 @@ export function registerAgentCommand(program: Command): void {
             p.log.message(`Agent: running (pid ${s.pid}${paused})`);
           } else if (hb.state === "stale") {
             p.log.warn(
-              `Agent: running (pid ${s.pid}) but STALLED (last tick ${hb.ageDisplay} ago) — run: inboxminder agent install`,
+              `Agent: running (pid ${s.pid}) but STALLED (last tick ${hb.ageDisplay} ago); run: inboxminder agent install`,
             );
           } else {
             p.log.message(
@@ -73,11 +73,11 @@ export function registerAgentCommand(program: Command): void {
           }
         } else
           p.log.warn(
-            `Agent: installed but not running — check ${DATA_DIR}/logs/watch.err.log`,
+            `Agent: installed but not running; check ${DATA_DIR}/logs/watch.err.log`,
           );
       } else {
         p.log.error(
-          `Unknown action "${action}" — use install | uninstall | status | pause | resume`,
+          `Unknown action "${action}"; use install | uninstall | status | pause | resume`,
         );
         process.exitCode = 1;
       }

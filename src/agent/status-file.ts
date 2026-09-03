@@ -110,6 +110,6 @@ export function writeStatusFile(cfg: Config): void {
     writeFileSync(tmp, JSON.stringify(json));
     renameSync(tmp, path);
   } catch (err) {
-    log.warn({ err }, "status.json write failed — continuing");
+    log.warn({ err }, "status.json write failed; continuing");
   }
 }

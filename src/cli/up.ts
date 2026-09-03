@@ -13,13 +13,13 @@ export function registerUpCommand(program: Command): void {
     )
     .action(async () => {
       if (!existsSync(CONFIG_PATH)) {
-        p.log.error("No config found — run: inboxminder init");
+        p.log.error("No config found; run: inboxminder init");
         process.exitCode = 1;
         return;
       }
       if (!getSecret("gmail-client-id") || !getSecret("gmail-client-secret")) {
         p.log.error(
-          "Gmail OAuth client missing — run: inboxminder init (or inboxminder set-key gmail-client-id / gmail-client-secret). See README for the Google Cloud steps.",
+          "Gmail OAuth client missing; run: inboxminder init (or inboxminder set-key gmail-client-id / gmail-client-secret). See README for the Google Cloud steps.",
         );
         process.exitCode = 1;
         return;

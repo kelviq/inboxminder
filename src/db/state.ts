@@ -201,7 +201,7 @@ export function recordActivity(
       "DELETE FROM activity WHERE id NOT IN (SELECT id FROM activity ORDER BY id DESC LIMIT ?)",
     ).run(ACTIVITY_CAP);
   } catch (err) {
-    log.warn({ err, kind }, "activity record failed — continuing");
+    log.warn({ err, kind }, "activity record failed; continuing");
   }
 }
 

@@ -145,7 +145,7 @@ export function agentStatus(
 ): AgentStatus {
   const installed = existsSync(plistPath);
   try {
-    // "PID Status Label" — PID is "-" when loaded but not running.
+    // "PID Status Label"; PID is "-" when loaded but not running.
     const line = launchctl("list")
       .split("\n")
       .find((l) => l.trim().endsWith(label));
@@ -202,7 +202,7 @@ export async function installAgent(): Promise<{
 }> {
   const cliPath = resolveCliPath();
   if (!existsSync(cliPath)) {
-    throw new Error(`Built CLI not found at ${cliPath} — run: pnpm build`);
+    throw new Error(`Built CLI not found at ${cliPath}; run: pnpm build`);
   }
   ensureDirs(); // launchd needs the log dir to exist before first write
   rotateLogIfLarge();
@@ -231,7 +231,7 @@ export function formatAge(ms: number): string {
 export interface HeartbeatStatus {
   state: "missing" | "ok" | "stale";
   ageMs: number | null;
-  /** Human-readable age, e.g. "32s" — null only when state is "missing". */
+  /** Human-readable age, e.g. "32s"; null only when state is "missing". */
   ageDisplay: string | null;
 }
 

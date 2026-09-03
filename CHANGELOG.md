@@ -1,14 +1,29 @@
 # Changelog
 
-## 0.9.2 — 2026-09-03
+## 0.9.3 (2026-09-03)
 
-- The app has an icon: the Seal — an envelope under a shield-check.
+- New brand icon: refreshed app icon plus a matching menu-bar template
+  icon that adapts to light/dark menu bars.
+- Menu-bar popover redesigned: status header with a live state dot, a
+  recent-activity feed with per-category icons and Gmail deep links, an
+  icon footer, and separate "Quit Menu Bar" / "Quit Completely" actions.
+- Preferences window polish: clearly editable fields, grouped forms,
+  tidier copy throughout.
+- Default label names are now short (`Newsletter`, `Pending`, ...) and
+  new labels arrive pre-colored from Gmail's palette. Existing labels,
+  including your own renames and recolors, are never touched.
+- Docs overhaul: a direct download link for the DMG, clearer quickstart,
+  and cleaned-up copy across README, app strings, and CLI output.
+
+## 0.9.2 (2026-09-03)
+
+- The app has an icon: the Seal, an envelope under a shield-check.
   (This release is also the first delivered via Sparkle auto-update.)
 - Releases now carry a version-less `InboxMinder.dmg` asset, giving the
   website an evergreen download link
   (`releases/latest/download/InboxMinder.dmg`).
 
-## 0.9.1 — 2026-09-02
+## 0.9.1 (2026-09-02)
 
 Auto-update infrastructure.
 
@@ -16,17 +31,17 @@ Auto-update infrastructure.
   EdDSA-verified, consent-based checks, "Check for updates…" in the
   menu. Build-from-source installs are unaffected.
 - Daemon gains a notify-only daily update check against GitHub releases
-  (`[email] updateCheck`, default on, disclosed in the privacy section)
-  — it never updates itself; npm/brew remain the install channel.
+  (`[email] updateCheck`, default on, disclosed in the privacy section);
+  it never updates itself; npm/brew remain the install channel.
 - status.json additively carries `updateAvailable`; the popover shows an
   update row with a Releases link.
 - Release pipeline: tag-triggered CI signs (Developer ID, hardened
   runtime), notarizes, staples, packages a DMG, publishes the GitHub
   Release, and refreshes the Sparkle appcast on GitHub Pages.
 
-## 0.9.0 — 2026-09-02
+## 0.9.0 (2026-09-02)
 
-Initial public release — extracted from a private tool running in
+Initial public release, extracted from a private tool running in
 production on the author's own inbox since July 2026.
 
 - Resident launchd gatekeeper: polls Gmail every 45s with a durable
@@ -35,17 +50,17 @@ production on the author's own inbox since July 2026.
   importance in a single verdict; classifier errors always fail open to
   "needs you".
 - Category labels: `InboxMinder/Newsletter`, `/Notification`,
-  `/Marketing`, `/Cold Outreach`, `/FYI` — every label name is
+  `/Marketing`, `/Cold Outreach`, `/FYI`; every label name is
   configurable (`[triage.labels]`, `[labels]`), from config or the
   Preferences window.
 - Thread-state labels: `InboxMinder/Pending` on reply-worthy mail,
   auto-flips to `/Resolved` when your reply is observed.
 - Importance tier: `InboxMinder/Important` + a subjects-only macOS
   notification for urgent reply-worthy mail.
-- Opt-in per-category archiving (`[triage] archive`) — skip-inbox with an
+- Opt-in per-category archiving (`[triage] archive`): skip-inbox with an
   atomic audit-trail label; never deletes, never marks spam.
 - Cold-outreach guard: a local ledger of everyone you write to, plus
-  conversation signals — known correspondents are never labeled cold;
+  conversation signals; known correspondents are never labeled cold, and
   `coldOutreachHint` teaches your definition of warm.
 - Per-sender steering rules matched on the address only (display names
   are spoofable and never match).
@@ -53,10 +68,10 @@ production on the author's own inbox since July 2026.
   OpenAI-compatible incl. Ollama for fully-local operation); secrets in
   the macOS Keychain only.
 - Profiles: fully isolated per-mailbox instances via `--profile`.
-- `inboxminder classify <id>` — safe single-message preview that labels
+- `inboxminder classify <id>`: safe single-message preview that labels
   nothing.
 - Menu-bar companion app (build from source: `make install-app`): live
   status, pause/resume, re-auth, the triage activity feed, and a
-  Preferences window covering every setting — backed by the
+  Preferences window covering every setting, backed by the
   `config get-settings`/`set-settings` CLI funnel, so the app itself
   never touches config.toml, the Keychain, or the network.
