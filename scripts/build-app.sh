@@ -49,17 +49,16 @@ if [ "$SIGN_IDENTITY" = "-" ]; then
   codesign --force --deep -s - "$APP"
 else
   # Inside-out signing with the hardened runtime for notarization.
-  if [ -d "$APP/Contents/Frameworks/Sparkle.framework" ]; then
-    codesign --force --options runtime -s "$SIGN_IDENTITY" \
-      "$APP/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc" 2>/dev/null || true
-    codesign --force --options runtime -s "$SIGN_IDENTITY" \
-      "$APP/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Installer.xpc" 2>/dev/null || true
-    codesign --force --options runtime -s "$SIGN_IDENTITY" \
-      "$APP/Contents/Frameworks/Sparkle.framework/Versions/B/Autoupdate" 2>/dev/null || true
-    codesign --force --options runtime -s "$SIGN_IDENTITY" \
-      "$APP/Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app" 2>/dev/null || true
-    codesign --force --options runtime -s "$SIGN_IDENTITY" \
-      "$APP/Contents/Frameworks/Sparkle.framework"
+  # Nested items are FOUND, not hardcoded (Sparkle's layout moves between
+  # releases), and failures are loud — a silently unsigned nested binary
+  # is exactly what the notary service rejects.
+  FW="$APP/Contents/Frameworks/Sparkle.framework"
+  if [ -d "$FW" ]; then
+    while IFS= read -r item; do
+      echo "signing nested: $item"
+      codesign --force --options runtime -s "$SIGN_IDENTITY" "$item"
+    done < <(find "$FW" -name "*.xpc" -o -name "*.app" -o -name "Autoupdate" -type f)
+    codesign --force --options runtime -s "$SIGN_IDENTITY" "$FW"
   fi
   codesign --force --options runtime -s "$SIGN_IDENTITY" "$APP"
   codesign --verify --strict "$APP"

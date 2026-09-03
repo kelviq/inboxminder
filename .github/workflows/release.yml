@@ -48,12 +48,26 @@ jobs:
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
         run: |
-          set -euo pipefail
+          set -uo pipefail
           echo "$ASC_KEY_P8" > asc-key.p8
           ditto -c -k --keepParent build/InboxMinder.app build/notarize.zip
           xcrun notarytool submit build/notarize.zip \
             --key asc-key.p8 --key-id "$ASC_KEY_ID" --issuer "$ASC_ISSUER_ID" \
-            --wait
+            --wait --output-format json > notary.json
+          submit_exit=$?
+          cat notary.json || true
+          sub_id=$(python3 -c "import json;print(json.load(open('notary.json')).get('id',''))" 2>/dev/null || true)
+          verdict=$(python3 -c "import json;print(json.load(open('notary.json')).get('status',''))" 2>/dev/null || true)
+          if [ "$verdict" != "Accepted" ]; then
+            echo "::error::notarization not accepted (exit=$submit_exit, status=$verdict) — Apple's log follows"
+            if [ -n "$sub_id" ]; then
+              xcrun notarytool log "$sub_id" \
+                --key asc-key.p8 --key-id "$ASC_KEY_ID" --issuer "$ASC_ISSUER_ID" || true
+            fi
+            rm -f asc-key.p8
+            exit 1
+          fi
+          set -e
           rm asc-key.p8 build/notarize.zip
           xcrun stapler staple build/InboxMinder.app
           spctl -a -vv build/InboxMinder.app
