@@ -87,7 +87,7 @@ inboxminder init
 
 ### Gmail setup (one-time, about 5 minutes)
 
-InboxMinder talks to Gmail as your own Google Cloud OAuth app, so there is no middleman that could see your mail. Gmail's scopes are in Google's restricted category, which is also why a shared client isn't offered: it would require annual security audits and cap users. Battle-tested steps:
+InboxMinder talks to Gmail as your own Google Cloud OAuth app, so there is no middleman that could see your mail. Gmail's scopes are in Google's restricted category, which is also why a shared client isn't offered: it would require annual security audits and cap users. The short version is below; [docs/gmail-setup.md](docs/gmail-setup.md) walks through every click, both account types, and the fixes for every common error.
 
 1. [console.cloud.google.com](https://console.cloud.google.com): create a project
 2. **APIs & Services > Library**: enable the **Gmail API**
