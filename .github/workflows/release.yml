@@ -77,7 +77,14 @@ jobs:
 
       - name: Package DMG
         id: dmg
-        run: echo "path=$(bash scripts/package-dmg.sh)" >> "$GITHUB_OUTPUT"
+        run: |
+          set -euo pipefail
+          path=$(bash scripts/package-dmg.sh)
+          echo "path=$path" >> "$GITHUB_OUTPUT"
+          # Version-less copy: gives the website an evergreen direct link,
+          # https://github.com/kelviq/inboxminder/releases/latest/download/InboxMinder.dmg
+          # (NOT fed to the appcast — Sparkle uses the versioned asset.)
+          cp "$path" build/InboxMinder.dmg
 
       - name: Sign update for Sparkle + generate appcast
         env:
@@ -101,7 +108,8 @@ jobs:
         run: |
           set -euo pipefail
           notes=$(awk '/^## /{n++} n==1' CHANGELOG.md)
-          gh release create "${{ github.ref_name }}" "${{ steps.dmg.outputs.path }}" \
+          gh release create "${{ github.ref_name }}" \
+            "${{ steps.dmg.outputs.path }}" build/InboxMinder.dmg \
             --title "InboxMinder ${{ github.ref_name }}" \
             --notes "$notes"
 
