@@ -20,6 +20,9 @@ public struct StatusFile: Codable, Equatable {
     public let profile: String?
     /// Newer released CLI version, or nil. Additive — absent decodes nil.
     public let updateAvailable: String?
+    /// The running daemon's own CLI version (plan 053); absent on
+    /// pre-0.10 daemons and decodes nil.
+    public let cliVersion: String?
     public let activity: [ActivityItem]
 
     public struct ActivityItem: Codable, Equatable {
@@ -53,7 +56,8 @@ public struct StatusFile: Codable, Equatable {
     public init(
         v: Int, pid: Int, tickAt: Double, staleAfterMs: Double, paused: Bool,
         reauthNeeded: Bool, selfEmail: String, profile: String? = nil,
-        updateAvailable: String? = nil, activity: [ActivityItem]
+        updateAvailable: String? = nil, cliVersion: String? = nil,
+        activity: [ActivityItem]
     ) {
         self.v = v
         self.pid = pid
@@ -64,6 +68,7 @@ public struct StatusFile: Codable, Equatable {
         self.selfEmail = selfEmail
         self.profile = profile
         self.updateAvailable = updateAvailable
+        self.cliVersion = cliVersion
         self.activity = activity
     }
 

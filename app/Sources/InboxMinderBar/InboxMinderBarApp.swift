@@ -60,16 +60,19 @@ struct InboxMinderBarApp: App {
         } label: {
             // The brand leaf while all is well; template SF Symbols for
             // the states that need to LOOK different at a glance (paused,
-            // setup, attention). Worst state across profiles wins.
-            if profiles.iconSymbol == "envelope",
-                let leaf = MenuBarIcon.template
-            {
-                Image(nsImage: leaf)
-            } else {
-                Image(systemName: profiles.iconSymbol)
-            }
+            // setup, attention). Worst state across profiles wins. The
+            // label is the one view alive from launch, so it also hosts
+            // the first-run gate (plan 053).
+            MenuBarLabelView(profiles: profiles)
         }
         .menuBarExtraStyle(.window)
+
+        // First-run wizard (plan 053) — auto-opened on a fresh default
+        // profile, reachable again from the popover's setup states.
+        Window("Welcome to InboxMinder", id: "onboarding") {
+            OnboardingView()
+        }
+        .windowResizability(.contentSize)
 
         // Per-profile Preferences — the value is the profile name, "" for
         // the default profile (openWindow can't carry nil).

@@ -96,8 +96,29 @@ final class PreferencesStore: ObservableObject {
         doc.instructions.rules.removeAll { $0.id == id }
     }
 
+    /// Transient API-key field for the Model tab (plan 053 sweep: a
+    /// provider switch never sends anyone to a terminal). Piped to
+    /// `set-key --stdin` on save and cleared; the app never holds it
+    /// at rest.
+    @Published var providerKey = ""
+
     func save() {
         guard let invoker else { return }
+        let key = providerKey
+        if !key.isEmpty {
+            let provider = doc.llm.provider
+            run(
+                invoker,
+                SetupInvocation(
+                    args: ["set-key", provider, "--stdin"], stdin: key,
+                    stdinIsSecret: true)
+            ) { result in
+                if result.exitCode != 0 {
+                    self.errorText = result.output
+                }
+            }
+            providerKey = ""
+        }
         doc.email.skipSenders = skipSendersText
             .split(whereSeparator: { $0 == "," || $0.isNewline })
             .map { $0.trimmingCharacters(in: .whitespaces) }

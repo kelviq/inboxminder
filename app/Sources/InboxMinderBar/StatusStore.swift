@@ -73,6 +73,22 @@ final class StatusStore: ObservableObject {
         CLIRunner.run(cli, ["auth"], environment: paths.cliEnvironment)
     }
 
+    /// D5 (plan 053): a Sparkle update replaced the app bundle, so the
+    /// bundled CLI is newer than the daemon still running the old code.
+    /// Only ever true for bundle-managed installs — an npm daemon's
+    /// version difference is npm's business, not ours.
+    var agentUpdatePending: Bool {
+        guard let cli,
+            BundledRuntime.manages(
+                invoker: CLIInvoker.from(location: cli),
+                bundleRoot: Bundle.main.bundleURL),
+            let running = derived.status?.cliVersion,
+            let mine = Bundle.main.infoDictionary?["CFBundleShortVersionString"]
+                as? String
+        else { return false }
+        return running != mine
+    }
+
     func reinstallAgent() {
         guard let cli else { return }
         CLIRunner.run(

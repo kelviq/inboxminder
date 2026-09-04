@@ -243,9 +243,20 @@ struct PreferencesView: View {
                     .font(.body.monospaced())
                     .frame(width: 250)
                 }
+                HStack {
+                    Text("API key")
+                    Spacer()
+                    SecureField(
+                        "", text: $store.providerKey,
+                        prompt: Text("only needed when switching provider")
+                    )
+                    .labelsHidden()
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 250)
+                }
             } footer: {
                 Text(
-                    "Switching provider needs its API key stored once:  inboxminder set-key <provider>.  OpenAI-compatible covers Ollama and LM Studio for a fully local setup."
+                    "Keys go straight to the macOS Keychain. OpenAI-compatible covers Ollama and LM Studio for a fully local setup."
                 )
                 .font(.caption).foregroundColor(.secondary)
             }

@@ -46,6 +46,11 @@ struct PopoverView: View {
                 .padding(.horizontal, embedded ? 0 : 16)
                 .padding(.bottom, 8)
         }
+        if store.agentUpdatePending, !embedded {
+            agentUpdateBanner
+                .padding(.horizontal, 16)
+                .padding(.bottom, 8)
+        }
         content
         if let update = store.derived.status?.updateAvailable, !embedded {
             updateBanner(update)
@@ -199,13 +204,23 @@ struct PopoverView: View {
     @ViewBuilder private var content: some View {
         switch store.derived.run {
         case .setupNeededNoConfig:
-            setupHint(
-                "One command in your terminal starts the guided setup:",
-                command: "inboxminder init")
+            // With a bundled runtime the wizard is the setup path (plan
+            // 053); the terminal command is the from-source fallback.
+            if Self.wizardAvailable {
+                wizardHint("Set up InboxMinder in about five minutes.")
+            } else {
+                setupHint(
+                    "One command in your terminal starts the guided setup:",
+                    command: "inboxminder init")
+            }
         case .setupNeededNoAgent:
-            setupHint(
-                "Your config is ready; this installs the background agent:",
-                command: "inboxminder up")
+            if Self.wizardAvailable {
+                wizardHint("Config found. Finish setup to go live.")
+            } else {
+                setupHint(
+                    "Your config is ready; this installs the background agent:",
+                    command: "inboxminder up")
+            }
         case .notReporting:
             hintText(
                 "The agent predates this app. Rebuild it, then choose "
@@ -224,6 +239,19 @@ struct PopoverView: View {
             .font(.callout).foregroundColor(.secondary)
             .padding(.horizontal, embedded ? 0 : 16)
             .padding(.bottom, 10)
+    }
+
+    static let wizardAvailable = BundledRuntime.fromMainBundle() != nil
+
+    private func wizardHint(_ text: String) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(text).font(.callout).foregroundColor(.secondary)
+            Button("Open Setup…") { openWindow(id: "onboarding") }
+                .keyboardShortcut(.defaultAction)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, embedded ? 0 : 16)
+        .padding(.bottom, 12)
     }
 
     private func setupHint(_ text: String, command: String) -> some View {
@@ -269,6 +297,25 @@ struct PopoverView: View {
         .padding(10)
         .background(
             RoundedRectangle(cornerRadius: 8).fill(Color.orange.opacity(0.12))
+        )
+    }
+
+    /// D5: the app updated; one click restarts the agent onto the new
+    /// bundled code.
+    private var agentUpdateBanner: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "arrow.triangle.2.circlepath")
+                .foregroundColor(.secondary)
+            Text("InboxMinder updated; restart the agent to apply")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            Spacer()
+            Button("Apply") { store.reinstallAgent() }
+                .controlSize(.small)
+        }
+        .padding(8)
+        .background(
+            RoundedRectangle(cornerRadius: 8).fill(Color.blue.opacity(0.10))
         )
     }
 
