@@ -93,3 +93,25 @@ describe("secretFromStdinText", () => {
     expect(secretFromStdinText(" spaced secret \n")).toBe(" spaced secret ");
   });
 });
+
+describe("Gmail-reserved label names (found in the wild: 'Important' 400s)", () => {
+  it("rejects system-label collisions case-insensitively", () => {
+    for (const bad of ["Important", "IMPORTANT", "inbox", "Starred", "spam"]) {
+      const toml = `[llm]\nprovider = "anthropic"\nmodel = "m"\n\n[triage.labels]\nimportant = ${JSON.stringify(bad)}\n`;
+      expect(
+        () => ConfigSchema.parse(parse(toml)),
+        `${bad} should be rejected`,
+      ).toThrow(/system label/);
+    }
+  });
+
+  it("accepts the new defaults and nested names", () => {
+    const toml = `[llm]\nprovider = "anthropic"\nmodel = "m"\n\n[triage.labels]\nimportant = "Mail/Important"\n`;
+    const cfg = ConfigSchema.parse(parse(toml));
+    expect(cfg.triage.labels.important).toBe("Mail/Important");
+    expect(
+      ConfigSchema.parse(parse('[llm]\nprovider = "anthropic"\nmodel = "m"\n'))
+        .triage.labels.important,
+    ).toBe("Urgent");
+  });
+});

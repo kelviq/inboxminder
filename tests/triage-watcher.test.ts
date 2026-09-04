@@ -84,7 +84,7 @@ describe("[triage] config", () => {
         marketing: "Marketing",
         "cold-outreach": "Cold Outreach",
         fyi: "FYI",
-        important: "Important",
+        important: "Urgent",
       },
     });
   });
@@ -189,7 +189,7 @@ describe("category labeling", () => {
     );
     expect(setThreadLabels).toHaveBeenCalledWith(
       "t-tw5",
-      ["Important"],
+      ["Urgent"],
       [],
       expect.anything(),
     );

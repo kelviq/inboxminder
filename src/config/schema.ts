@@ -21,6 +21,34 @@ export const ProviderSchema = z.enum([
   "openai-compatible",
 ]);
 
+/**
+ * Gmail rejects user labels whose name collides (case-insensitively)
+ * with a system label — labels.create returns an opaque 400 "Invalid
+ * label name". Caught in the wild on 2026-09-04: the old default
+ * "Important" could never be created on a fresh mailbox. Validate here
+ * so a hand-configured collision fails loudly at config load instead.
+ */
+const GMAIL_RESERVED_LABELS = new Set([
+  "inbox",
+  "spam",
+  "trash",
+  "unread",
+  "starred",
+  "important",
+  "sent",
+  "draft",
+  "drafts",
+  "chat",
+]);
+const labelName = () =>
+  z
+    .string()
+    .min(1)
+    .refine((n) => !GMAIL_RESERVED_LABELS.has(n.trim().toLowerCase()), {
+      message:
+        "collides with a Gmail system label (Gmail rejects it); pick another name, e.g. Urgent instead of Important",
+    });
+
 export const ConfigSchema = z.object({
   llm: z
     .object({
@@ -63,12 +91,13 @@ export const ConfigSchema = z.object({
       // TOML note: the hyphenated key needs quotes — "cold-outreach" = "…".
       labels: z
         .object({
-          newsletter: z.string().min(1).default("Newsletter"),
-          notification: z.string().min(1).default("Notification"),
-          marketing: z.string().min(1).default("Marketing"),
-          "cold-outreach": z.string().min(1).default("Cold Outreach"),
-          fyi: z.string().min(1).default("FYI"),
-          important: z.string().min(1).default("Important"),
+          newsletter: labelName().default("Newsletter"),
+          notification: labelName().default("Notification"),
+          marketing: labelName().default("Marketing"),
+          "cold-outreach": labelName().default("Cold Outreach"),
+          fyi: labelName().default("FYI"),
+          // "Important" collides with Gmail's system label; see above.
+          important: labelName().default("Urgent"),
         })
         .prefault({}),
     })
@@ -80,8 +109,8 @@ export const ConfigSchema = z.object({
   labels: z
     .object({
       enabled: z.boolean().default(true),
-      pending: z.string().min(1).default("Pending"),
-      resolved: z.string().min(1).default("Resolved"),
+      pending: labelName().default("Pending"),
+      resolved: labelName().default("Resolved"),
     })
     .prefault({}),
   // Per-sender steering rules, keyed by sender ADDRESS substring (display

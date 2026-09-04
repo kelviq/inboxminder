@@ -32,7 +32,7 @@ final class PreferencesStore: ObservableObject {
             labels: .init(
                 newsletter: "Newsletter", notification: "Notification",
                 marketing: "Marketing", coldOutreach: "Cold Outreach",
-                fyi: "FYI", important: "Important")),
+                fyi: "FYI", important: "Urgent")),
         labels: .init(enabled: true, pending: "Pending", resolved: "Resolved"),
         instructions: .init(rules: []))
     @Published var skipSendersText = ""

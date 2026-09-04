@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/kelviq/inboxminder/actions/workflows/ci.yml/badge.svg)](https://github.com/kelviq/inboxminder/actions/workflows/ci.yml)
 
-**The open-source AI gatekeeper for your inbox.** Every email you receive is read by an agent on your own Mac, scored, and triaged. Reply-worthy mail gets flagged, urgent mail gets marked Important, and newsletters, notifications, marketing, and cold outreach get sorted with Gmail labels. Opt in, and the junk tiers skip your inbox entirely.
+**The open-source AI gatekeeper for your inbox.** Every email you receive is read by an agent on your own Mac, scored, and triaged. Reply-worthy mail gets flagged, urgent mail gets an Urgent label, and newsletters, notifications, marketing, and cold outreach get sorted with Gmail labels. Opt in, and the junk tiers skip your inbox entirely.
 
 No hosted service ever sees your mail. No account with us. Your own LLM key. It never sends and never deletes, and every decision it makes is a visible, reversible Gmail label.
 
@@ -19,7 +19,7 @@ A resident background agent polls your Gmail every 45 seconds. Each new email ge
 | Verdict | What happens |
 |---|---|
 | Needs a reply | `Pending`, flipping to `Resolved` the moment your reply goes out |
-| Urgent or blocking | `Important` plus a macOS notification (subject only) |
+| Urgent or blocking | `Urgent` plus a macOS notification (subject only) |
 | Newsletter | `Newsletter` |
 | Automated notification | `Notification` |
 | Marketing | `Marketing` |
@@ -148,7 +148,7 @@ notification = "Notification"
 marketing = "Marketing"
 "cold-outreach" = "Cold Outreach"
 fyi = "FYI"
-important = "Important"
+important = "Urgent"
 
 [labels]
 enabled = true

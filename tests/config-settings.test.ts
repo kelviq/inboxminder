@@ -42,7 +42,7 @@ describe("settingsFromConfig", () => {
           marketing: "Marketing",
           "cold-outreach": "Cold Outreach",
           fyi: "FYI",
-          important: "Important",
+          important: "Urgent",
         },
       },
       labels: {

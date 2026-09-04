@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.10.1 (2026-09-04)
+
+- Fixed: fresh installs could never create the urgency label. Gmail
+  reserves label names that collide with its system labels, and our
+  default was "Important"; creating it returned an opaque 400 on every
+  new mailbox (existing installs with the label already present were
+  unaffected). The default is now "Urgent", and config validation
+  rejects any reserved name with a clear message. Found by the first
+  fresh-Mac install, minutes after 0.10.0 shipped.
+- The setup wizard's model field is now a dropdown of current model ids
+  per provider (with notes like "recommended" and "fastest, cheapest"),
+  plus a Custom option for anything newer. Also fixed a wrong OpenAI
+  default id.
+
 ## 0.10.0 (2026-09-04)
 
 The self-sufficient release: download the DMG, open the app, and set up

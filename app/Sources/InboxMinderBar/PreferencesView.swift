@@ -160,7 +160,7 @@ struct PreferencesView: View {
                 labelField(
                     "Cold outreach", $store.doc.triage.labels.coldOutreach)
                 labelField("FYI", $store.doc.triage.labels.fyi)
-                labelField("Important", $store.doc.triage.labels.important)
+                labelField("Urgent", $store.doc.triage.labels.important)
                 Text("A \u{201C}/\u{201D} nests labels in Gmail's sidebar.")
                     .font(.caption).foregroundColor(.secondary)
             }
@@ -286,7 +286,7 @@ struct PreferencesView: View {
                 Toggle(isOn: $store.doc.email.notifications) {
                     Text("Notifications")
                     Text(
-                        "Important mail and re-auth only; subjects, never contents"
+                        "Urgent mail and re-auth only; subjects, never contents"
                     )
                 }
                 Toggle(isOn: $store.doc.email.updateCheck) {
