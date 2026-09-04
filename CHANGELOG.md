@@ -22,7 +22,7 @@ everything with zero terminal.
 - After the app updates itself, the popover offers one click to restart
   the background agent onto the new code.
 - The update feed moved to inboxminder.com (old feed URLs redirect).
-- Honest note: the DMG grew from ~3MB to roughly 45MB; that's the
+- Honest note: the DMG grew from ~3MB to roughly 75MB; that's the
   bundled engine. Auto-update deltas soften repeat downloads.
 
 ## 0.9.3 (2026-09-03)
