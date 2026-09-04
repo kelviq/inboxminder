@@ -2,6 +2,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
+import { VERSION } from "../src/version.js";
 
 // Point all state (sqlite + status.json) at a temp dir BEFORE loading modules.
 const dataDir = mkdtempSync(join(tmpdir(), "inboxminder-test-"));
@@ -44,6 +45,7 @@ describe("buildStatusJson (pure projection)", () => {
       selfEmail: "me@example.com",
       profile: null,
       updateAvailable: null,
+      cliVersion: VERSION,
       activity: [],
     });
   });

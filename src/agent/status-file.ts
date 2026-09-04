@@ -12,6 +12,7 @@ import {
 } from "../db/state.js";
 import { log } from "../log.js";
 import { updateAvailable } from "../update-check.js";
+import { VERSION } from "../version.js";
 import { staleAfterMs } from "./launchd.js";
 
 /*
@@ -41,6 +42,12 @@ export interface StatusFileInputs {
   activity: ActivityRow[];
 }
 
+/**
+ * The daemon's OWN running version rides along additively (plan 053):
+ * the app compares it against its bundled CLI's version to offer
+ * "apply update to agent" after a Sparkle update replaced the bundle.
+ */
+
 export interface StatusJson {
   v: number;
   pid: number;
@@ -53,6 +60,8 @@ export interface StatusJson {
   profile: string | null;
   /** Additive — `v` stays 1; readers treat absence as null. */
   updateAvailable: string | null;
+  /** Additive — `v` stays 1: the running daemon's own CLI version. */
+  cliVersion: string;
   activity: Array<{
     kind: string;
     subject: string | null;
@@ -75,6 +84,7 @@ export function buildStatusJson(inputs: StatusFileInputs): StatusJson {
     selfEmail: inputs.selfEmail,
     profile: inputs.profile,
     updateAvailable: inputs.updateAvailable,
+    cliVersion: VERSION,
     activity: inputs.activity.slice(0, ACTIVITY_IN_STATUS).map((r) => ({
       kind: r.kind,
       subject: r.subject,

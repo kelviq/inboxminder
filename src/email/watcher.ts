@@ -1,4 +1,5 @@
 import { rotateLogIfLarge } from "../agent/launchd.js";
+import { reauthActionText } from "../agent/managed.js";
 import { writeStatusFile } from "../agent/status-file.js";
 import type { Config, TriageCategory } from "../config/schema.js";
 import {
@@ -48,8 +49,7 @@ function reportAuthFailure(cfg: Config): void {
   if (Date.now() - last < REAUTH_NOTIFY_GAP_MS) return;
   setKV("notified:reauth", String(Date.now()));
   recordActivity("reauth", {});
-  if (cfg.email.notifications)
-    notify("InboxMinder", "Gmail authorization expired; run: inboxminder auth");
+  if (cfg.email.notifications) notify("InboxMinder", reauthActionText());
 }
 
 /**

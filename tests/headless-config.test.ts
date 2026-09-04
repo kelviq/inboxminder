@@ -35,6 +35,35 @@ describe("headless answers → config.toml", () => {
     expect(headless).toBe(interactive);
   });
 
+  it("baseUrl lands in [llm] for openai-compatible and validates (plan 053 wizard)", () => {
+    const toml = renderConfigToml(
+      answersToTomlInput({
+        llmProvider: "openai-compatible",
+        model: "llama3.3",
+        baseUrl: "http://localhost:11434/v1",
+      }),
+    );
+    const cfg = ConfigSchema.parse(parse(toml));
+    expect(cfg.llm.baseUrl).toBe("http://localhost:11434/v1");
+  });
+
+  it("baseUrl is rejected on providers that don't use it", () => {
+    expect(() =>
+      answersToTomlInput({
+        llmProvider: "anthropic",
+        model: "m",
+        baseUrl: "http://localhost:11434/v1",
+      }),
+    ).toThrow();
+    expect(() =>
+      answersToTomlInput({
+        llmProvider: "openai-compatible",
+        model: "m",
+        baseUrl: "not a url",
+      }),
+    ).toThrow();
+  });
+
   it("rejects unknown providers, wrong shapes, and unknown keys (strict contract)", () => {
     expect(() =>
       answersToTomlInput({ llmProvider: "grok", model: "m" }),

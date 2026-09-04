@@ -16,15 +16,22 @@ export const AnswersSchema = z
   .object({
     llmProvider: z.enum(["openai", "anthropic", "google", "openai-compatible"]),
     model: z.string().min(1),
+    // openai-compatible only; ConfigSchema re-validates the written TOML,
+    // so a baseUrl on another provider is harmless surplus there but is
+    // rejected here to keep the contract honest.
+    baseUrl: z.string().url().optional(),
   })
-  .strict();
+  .strict()
+  .refine((a) => a.llmProvider === "openai-compatible" || !a.baseUrl, {
+    message: "baseUrl is only valid with llmProvider openai-compatible",
+  });
 
 export type Answers = z.infer<typeof AnswersSchema>;
 
 /** Validated answers → renderConfigToml input. */
 export function answersToTomlInput(raw: unknown): RenderConfigTomlOptions {
   const a = AnswersSchema.parse(raw);
-  return { llmProvider: a.llmProvider, model: a.model };
+  return { llmProvider: a.llmProvider, model: a.model, baseUrl: a.baseUrl };
 }
 
 /**

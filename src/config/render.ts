@@ -5,14 +5,17 @@
 export interface RenderConfigTomlOptions {
   llmProvider: string;
   model: string;
+  /** openai-compatible only (Ollama, LM Studio, Groq...). */
+  baseUrl?: string;
 }
 
 export function renderConfigToml(opts: RenderConfigTomlOptions): string {
-  const { llmProvider, model } = opts;
+  const { llmProvider, model, baseUrl } = opts;
   return [
     "[llm]",
     `provider = ${JSON.stringify(llmProvider)}`,
     `model = ${JSON.stringify(model)}`,
+    ...(baseUrl ? [`baseUrl = ${JSON.stringify(baseUrl)}`] : []),
     "",
     "[email]",
     "pollIntervalSec = 45",

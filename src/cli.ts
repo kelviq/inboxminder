@@ -10,6 +10,7 @@ import { registerConfigCommand } from "./cli/config.js";
 import { registerInitCommand } from "./cli/init.js";
 import { registerSetKeyCommand } from "./cli/keys.js";
 import { registerProfilesCommand } from "./cli/profiles.js";
+import { registerSetupStatusCommand } from "./cli/setup-status.js";
 import { registerUpCommand } from "./cli/up.js";
 import { registerWatchCommand } from "./cli/watch.js";
 import { VERSION } from "./version.js";
@@ -47,6 +48,7 @@ registerAgentCommand(program);
 registerClassifyCommand(program);
 registerProfilesCommand(program);
 registerConfigCommand(program);
+registerSetupStatusCommand(program);
 
 program.parseAsync().catch((err: unknown) => {
   console.error(err instanceof Error ? err.message : String(err));

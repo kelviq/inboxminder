@@ -1,3 +1,4 @@
+import { updateActionText } from "./agent/managed.js";
 import type { Config } from "./config/schema.js";
 import { getKV, setKV } from "./db/state.js";
 import { log } from "./log.js";
@@ -81,10 +82,7 @@ export async function maybeCheckForUpdate(cfg: Config): Promise<void> {
         setKV(notifiedKey, String(Date.now()));
         log.info({ current: VERSION, latest: version }, "update available");
         if (cfg.email.notifications)
-          notify(
-            "InboxMinder",
-            `Update available (${version}); npm update -g inboxminder`,
-          );
+          notify("InboxMinder", updateActionText(version));
       }
     }
   } catch (err) {
