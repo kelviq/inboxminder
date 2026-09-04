@@ -46,6 +46,15 @@ struct OnboardingView: View {
             store.refresh(andAdvance: false)
             NSApp.activate(ignoringOtherApps: true)
         }
+        .onDisappear {
+            // Closed before finishing: point at where setup lives, so
+            // the window never feels lost (re-entry is derived, so any
+            // path back resumes at the right step).
+            if store.phase == .ready, store.step != .done {
+                TrayBalloon.show(
+                    "Setup will wait. Click the leaf in your menu bar to continue.")
+            }
+        }
     }
 
     // MARK: sidebar

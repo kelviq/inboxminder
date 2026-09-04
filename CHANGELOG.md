@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.10.2 (2026-09-04)
+
+Fixes from the first outside testers, hours after 0.10.0.
+
+- Reopening the app now always does something visible. A menu-bar app
+  has no Dock icon, so double-clicking it in Applications while it was
+  already running looked like nothing happened; if you'd closed the
+  setup wizard, there was no obvious way back. Now: reopening brings
+  the wizard back when setup is unfinished, and otherwise shows a
+  balloon pointing at the menu bar icon ("InboxMinder is running here").
+- Closing the wizard mid-setup shows the same balloon ("Setup will
+  wait"), and the menu bar popover's setup state gained a prominent
+  Finish Setting Up button.
+- The wizard's model field is a dropdown of current model ids for
+  Anthropic, OpenAI, and Google (with notes like "recommended"), plus
+  Custom for anything newer.
+
 ## 0.10.1 (2026-09-04)
 
 - Fixed: fresh installs could never create the urgency label. Gmail

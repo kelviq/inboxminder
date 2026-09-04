@@ -40,6 +40,19 @@ enum MenuBarIcon {
 }
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    /// Finder double-click on the already-running app. Without a Dock
+    /// icon or windows this is otherwise INVISIBLE — the exact "I opened
+    /// it again and nothing happened" trap a first tester hit. The
+    /// bridge reopens the wizard when setup is unfinished and shows the
+    /// menu-bar balloon otherwise.
+    func applicationShouldHandleReopen(
+        _ sender: NSApplication, hasVisibleWindows: Bool
+    ) -> Bool {
+        // NSApplicationDelegate callbacks arrive on the main thread.
+        DispatchQueue.main.async { ReopenBridge.handler?() }
+        return true
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Menu-bar-only app: no Dock icon, no app switcher entry. Set
         // programmatically so it holds both from the bundled .app

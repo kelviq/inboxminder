@@ -246,8 +246,18 @@ struct PopoverView: View {
     private func wizardHint(_ text: String) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(text).font(.callout).foregroundColor(.secondary)
-            Button("Open Setup…") { openWindow(id: "onboarding") }
-                .keyboardShortcut(.defaultAction)
+            Button {
+                openWindow(id: "onboarding")
+                NSApp.activate(ignoringOtherApps: true)
+            } label: {
+                Text("Finish Setting Up…")
+                    .font(.callout.weight(.semibold))
+                    .frame(maxWidth: .infinity)
+            }
+            .controlSize(.large)
+            .buttonStyle(.borderedProminent)
+            .tint(Color(red: 1.0, green: 0.27, blue: 0.0))
+            .keyboardShortcut(.defaultAction)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, embedded ? 0 : 16)

@@ -16,6 +16,21 @@ struct MenuBarLabelView: View {
         glyph.task {
             guard !gateChecked else { return }
             gateChecked = true
+            ReopenBridge.handler = {
+                let paths = InboxMinderPaths()
+                let fm = FileManager.default
+                let setupNeeded = OnboardingProgress.isNeeded(
+                    configExists: fm.fileExists(atPath: paths.configToml.path),
+                    agentPlistExists: fm.fileExists(
+                        atPath: paths.launchAgentPlist.path))
+                if setupNeeded, BundledRuntime.fromMainBundle() != nil {
+                    openWindow(id: "onboarding")
+                    NSApp.activate(ignoringOtherApps: true)
+                } else {
+                    TrayBalloon.show(
+                        "InboxMinder is running here in your menu bar")
+                }
+            }
             // Wizard only when this build can actually drive setup —
             // a from-source build without the bundled runtime keeps
             // the popover's terminal hint instead.
