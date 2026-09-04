@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.10.0 (2026-09-04)
+
+The self-sufficient release: download the DMG, open the app, and set up
+everything with zero terminal.
+
+- The app now bundles its own engine (node + the CLI, signed and
+  notarized inside the bundle). No npm install required; npm remains
+  fully supported for terminal users, and an existing npm-managed
+  install is never hijacked.
+- First-run setup wizard: pick your AI (with model-id hints), connect
+  your own Gmail app (with an honest explainer of why Google requires
+  one, and a link to the click-by-click walkthrough), authorize in the
+  browser, go live. Closing mid-way is safe; reopening resumes at the
+  right step. Credentials already on your Mac (a second profile, an
+  earlier CLI setup) are detected and reused, and the wizard says so.
+- No terminal, anywhere: the popover's setup states open the wizard,
+  Preferences' Model tab takes the API key directly, and daemon
+  notifications tell app users to open the menu bar instead of quoting
+  commands (CLI users still get the exact commands).
+- After the app updates itself, the popover offers one click to restart
+  the background agent onto the new code.
+- The update feed moved to inboxminder.com (old feed URLs redirect).
+- Honest note: the DMG grew from ~3MB to roughly 45MB; that's the
+  bundled engine. Auto-update deltas soften repeat downloads.
+
 ## 0.9.3 (2026-09-03)
 
 - New brand icon: refreshed app icon plus a matching menu-bar template
