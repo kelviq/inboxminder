@@ -67,12 +67,53 @@ final class OnboardingStore: ObservableObject {
     /// Default model per provider — a convenience, freely editable.
     static let defaultModels: [String: String] = [
         "anthropic": "claude-sonnet-5",
-        "openai": "gpt-5.2",
-        "google": "gemini-3-flash",
+        "openai": "gpt-5.1",
+        "google": "gemini-2.5-flash",
         "openai-compatible": "llama3.3",
     ]
 
+    /// Curated model ids per hosted provider, so nobody has to go hunt
+    /// for a model string. Deliberately short: a good default, a budget
+    /// pick, a top-end pick. Anything else is one "Custom" away, and the
+    /// docs link covers the rest. Update alongside releases.
+    static let curatedModels: [String: [(id: String, note: String)]] = [
+        "anthropic": [
+            ("claude-sonnet-5", "recommended"),
+            ("claude-haiku-4-5", "fastest, cheapest"),
+            ("claude-opus-5", "most capable"),
+            ("claude-fable-5-1", "frontier, premium"),
+            ("claude-fable-5", ""),
+            ("claude-opus-4-8", ""),
+            ("claude-opus-4-7", ""),
+            ("claude-opus-4-6", ""),
+            ("claude-sonnet-4-6", ""),
+        ],
+        "openai": [
+            ("gpt-5.1", "recommended"),
+            ("gpt-5", ""),
+            ("gpt-5-mini", "cheaper"),
+            ("gpt-5-nano", "fastest, cheapest"),
+            ("gpt-4.1", ""),
+            ("gpt-4.1-mini", ""),
+            ("gpt-4o", ""),
+            ("gpt-4o-mini", ""),
+        ],
+        "google": [
+            ("gemini-2.5-flash", "recommended"),
+            ("gemini-2.5-pro", "most capable"),
+            ("gemini-2.5-flash-lite", "fastest, cheapest"),
+            ("gemini-3-pro-preview", "newest, preview"),
+            ("gemini-3-flash-preview", "preview"),
+            ("gemini-2.0-flash", ""),
+        ],
+    ]
+
+    /// True when the user picked "Custom…" for a provider that has a
+    /// curated list (openai-compatible is always free-text).
+    @Published var modelIsCustom = false
+
     func providerChanged() {
+        modelIsCustom = false
         if let suggestion = Self.defaultModels[provider] { model = suggestion }
     }
 

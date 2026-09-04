@@ -321,12 +321,7 @@ struct OnboardingView: View {
                 .labelsHidden()
                 .onChange(of: store.provider) { _ in store.providerChanged() }
             }
-            labeledField("Model") {
-                TextField("", text: $store.model)
-                    .textFieldStyle(.roundedBorder)
-                    .font(.body.monospaced())
-            }
-            modelHint
+            modelField
             if store.provider == "openai-compatible" {
                 labeledField("Base URL") {
                     TextField(
@@ -348,6 +343,60 @@ struct OnboardingView: View {
                 disabled: store.busy || store.model.isEmpty
                     || store.llmKey.isEmpty
             ) { store.submitLLM() }
+        }
+    }
+
+    /// Hosted providers get a curated picker (nobody should have to go
+    /// find a model string); "Custom" reveals free text for anything
+    /// newer or unusual. openai-compatible is always free text.
+    @ViewBuilder private var modelField: some View {
+        if let curated = OnboardingStore.curatedModels[store.provider] {
+            labeledField("Model") {
+                Picker(
+                    "",
+                    selection: Binding(
+                        get: {
+                            store.modelIsCustom ? "__custom" : store.model
+                        },
+                        set: { value in
+                            if value == "__custom" {
+                                store.modelIsCustom = true
+                                store.model = ""
+                            } else {
+                                store.modelIsCustom = false
+                                store.model = value
+                            }
+                        })
+                ) {
+                    ForEach(curated, id: \.id) { option in
+                        Text(
+                            option.note.isEmpty
+                                ? option.id
+                                : "\(option.id)  ·  \(option.note)"
+                        )
+                        .tag(option.id)
+                    }
+                    Divider()
+                    Text("Custom…").tag("__custom")
+                }
+                .labelsHidden()
+            }
+            if store.modelIsCustom {
+                TextField(
+                    "", text: $store.model,
+                    prompt: Text("paste any model id")
+                )
+                .textFieldStyle(.roundedBorder)
+                .font(.body.monospaced())
+                modelHint
+            }
+        } else {
+            labeledField("Model") {
+                TextField("", text: $store.model)
+                    .textFieldStyle(.roundedBorder)
+                    .font(.body.monospaced())
+            }
+            modelHint
         }
     }
 
