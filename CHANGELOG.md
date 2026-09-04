@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.10.4 (2026-09-04)
+
+- The setup wizard gained a Back button next to Continue, completing
+  its navigation story: Back steps to the previous screen, the rail
+  jumps anywhere you've been, and Continue always returns you to the
+  right place.
+
 ## 0.10.3 (2026-09-04)
 
 - You can go back in the setup wizard: completed steps in the left rail

@@ -589,11 +589,26 @@ struct OnboardingView: View {
             fields()
             Spacer(minLength: 0)
             HStack {
+                if let previous = previousStep {
+                    Button("Back") { store.step = previous }
+                        .controlSize(.large)
+                        .disabled(store.busy)
+                }
                 if store.busy { ProgressView().controlSize(.small) }
                 Spacer()
                 action()
             }
         }
+    }
+
+    /// The rail step before the current one; nil on the first step
+    /// (there's nothing to go back to — Welcome re-derives forward).
+    private var previousStep: OnboardingStep? {
+        let order: [OnboardingStep] = [.llm, .gmail, .authorize, .goLive]
+        guard let i = order.firstIndex(of: store.step), i > 0 else {
+            return nil
+        }
+        return order[i - 1]
     }
 
     private func iconChip(
