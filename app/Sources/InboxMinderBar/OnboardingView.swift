@@ -84,17 +84,33 @@ struct OnboardingView: View {
 
             ForEach(Array(railSteps.enumerated()), id: \.element.step) {
                 index, rail in
-                HStack(spacing: 10) {
-                    railBadge(for: rail.step, index: index)
-                    Text(rail.name)
-                        .font(
-                            .callout.weight(
-                                rail.step == store.step ? .semibold : .regular)
-                        )
-                        .foregroundColor(
-                            railState(rail.step) == .upcoming
-                                ? .secondary : .primary)
+                // Completed steps are clickable: going back to change an
+                // answer (a different API key, a fixed client id) re-runs
+                // that step; Continue then re-derives the resume point,
+                // so nothing downstream is lost. Upcoming steps stay
+                // locked — no skipping ahead.
+                Button {
+                    if railState(rail.step) == .done, !store.busy {
+                        store.step = rail.step
+                    }
+                } label: {
+                    HStack(spacing: 10) {
+                        railBadge(for: rail.step, index: index)
+                        Text(rail.name)
+                            .font(
+                                .callout.weight(
+                                    rail.step == store.step
+                                        ? .semibold : .regular)
+                            )
+                            .foregroundColor(
+                                railState(rail.step) == .upcoming
+                                    ? .secondary : .primary)
+                    }
                 }
+                .buttonStyle(.plain)
+                .help(
+                    railState(rail.step) == .done
+                        ? "Go back to this step" : "")
                 .padding(.vertical, 4)
                 if index < railSteps.count - 1 {
                     Rectangle()

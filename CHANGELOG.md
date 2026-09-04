@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.10.3 (2026-09-04)
+
+- You can go back in the setup wizard: completed steps in the left rail
+  are clickable, so changing an earlier answer (a different API key or
+  model, a fixed Gmail client id) is one click. Continue then returns
+  you to where you were; nothing downstream is lost, and an accidental
+  overwrite can't happen because a revisited step won't continue
+  without a key entered.
+
 ## 0.10.2 (2026-09-04)
 
 Fixes from the first outside testers, hours after 0.10.0.

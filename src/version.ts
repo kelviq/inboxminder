@@ -3,4 +3,4 @@
  * `--version`. A test pins this to package.json so the two can never
  * drift; bump both together on release.
  */
-export const VERSION = "0.10.2";
+export const VERSION = "0.10.3";
