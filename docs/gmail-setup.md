@@ -120,9 +120,13 @@ never in config files.
 
 ## Step 5: Give the values to InboxMinder
 
-If you're running `inboxminder init`, it asks for both values at the
-right moment; paste them in and you're done. Otherwise, store them any
-time:
+**Using the Mac app?** The setup wizard's "Connect your own Gmail app"
+screen is waiting for exactly these two values: paste the Client ID and
+Client secret, click Continue, then click **Authorize in Browser** on
+the next screen. That's it; skip the rest of this section.
+
+**Using the CLI instead?** If you're running `inboxminder init`, it asks
+for both values at the right moment. Otherwise, store them any time:
 
 ```bash
 inboxminder set-key gmail-client-id
@@ -130,23 +134,31 @@ inboxminder set-key gmail-client-secret
 ```
 
 Each command prompts for the value and writes it to the macOS Keychain.
-
 Then authorize:
 
 ```bash
 inboxminder auth
 ```
 
-Your browser opens Google's consent page. Sign in with the same account,
-accept (clicking through the unverified-app warning if you published an
-External app), and the browser tab will say authorization is complete.
-Tokens land in the Keychain; InboxMinder's local web server for the
-redirect only ever listens on localhost, only during this flow.
+Either way, your browser opens Google's consent page. Sign in with the
+same account, accept (clicking through the unverified-app warning if you
+published an External app), and the browser tab will say authorization
+is complete. Tokens land in the Keychain; InboxMinder's local web server
+for the redirect only ever listens on localhost, only during this flow.
 
 The requested scope is `gmail.modify`: read mail, write labels. There is
 no send scope and no delete capability in what you just granted.
 
+One app, every mailbox: if you later mind a second account (InboxMinder
+profiles), it reuses this same Google app; you never repeat this
+walkthrough.
+
 ## Verify it works
+
+Mac app: finish the wizard's last step and the menu bar leaf switches to
+"Minding your inbox"; send yourself an email and watch the label land.
+
+CLI:
 
 ```bash
 inboxminder agent status
