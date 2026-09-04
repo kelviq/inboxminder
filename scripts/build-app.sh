@@ -8,6 +8,10 @@
 #                        release workflow; needs the cert in the keychain.
 # RELEASE_TAG set      — assert Info.plist versions match the tag (vX.Y.Z)
 #                        so a release can never ship mismatched versions.
+# BUNDLE_RUNTIME=1     — stage node + the CLI into Contents/Resources/runtime
+#                        (plan 053: the self-sufficient DMG). Release builds
+#                        set this; dev builds skip it and the app falls back
+#                        to plist/npm discovery exactly as before.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -46,7 +50,36 @@ if [ -n "$SPARKLE_FRAMEWORK" ]; then
   install_name_tool -add_rpath "@loader_path/../Frameworks"     "$APP/Contents/MacOS/InboxMinderBar"
 fi
 
+if [ "${BUNDLE_RUNTIME:-}" = "1" ]; then
+  bash scripts/bundle-runtime.sh
+  cp -R build/runtime "$APP/Contents/Resources/runtime"
+fi
+
+sign_runtime() {
+  # Every Mach-O inside the bundled runtime must carry its own signature:
+  # the notary service rejects any unsigned nested binary, and --deep
+  # never descends into Resources. That is the node binary plus each
+  # native module (.node) the CLI ships.
+  local identity="$1" opts="$2" rt="$APP/Contents/Resources/runtime"
+  [ -d "$rt" ] || return 0
+  while IFS= read -r item; do
+    echo "signing runtime: $item"
+    if [ "$(basename "$item")" = "node" ]; then
+      # V8 JITs; hardened runtime needs allow-jit or node dies at start.
+      # shellcheck disable=SC2086
+      codesign --force $opts \
+        --entitlements scripts/node-entitlements.plist \
+        -s "$identity" "$item"
+    else
+      # shellcheck disable=SC2086
+      codesign --force $opts -s "$identity" "$item"
+    fi
+  done < <(find "$rt" -type f \( -name node -o -name '*.node' \) \
+      -exec sh -c 'file -b "$1" | grep -q Mach-O' _ {} \; -print)
+}
+
 if [ "$SIGN_IDENTITY" = "-" ]; then
+  sign_runtime "-" ""
   codesign --force --deep -s - "$APP"
 else
   # Inside-out signing with the hardened runtime for notarization.
@@ -61,6 +94,7 @@ else
     done < <(find "$FW" -name "*.xpc" -o -name "*.app" -o -name "Autoupdate" -type f)
     codesign --force --options runtime -s "$SIGN_IDENTITY" "$FW"
   fi
+  sign_runtime "$SIGN_IDENTITY" "--options runtime"
   codesign --force --options runtime -s "$SIGN_IDENTITY" "$APP"
   codesign --verify --strict "$APP"
 fi

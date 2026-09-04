@@ -20,6 +20,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # The bundled runtime (plan 053) is staged with pnpm from the
+      # frozen lockfile; same toolchain versions as CI.
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
       - name: Import Developer ID certificate
         env:
           MACOS_CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
@@ -40,6 +49,7 @@ jobs:
       - name: Build + sign
         env:
           RELEASE_TAG: ${{ github.ref_name }}
+          BUNDLE_RUNTIME: "1"
         run: bash scripts/build-app.sh
 
       - name: Notarize + staple
