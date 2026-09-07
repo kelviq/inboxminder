@@ -13,6 +13,10 @@ page walks through every click.
 **What you'll end up with:** a Client ID and a Client Secret, two strings
 you paste into `inboxminder init` (or `inboxminder set-key`).
 
+**Prefer watching?** A short screen recording walks through every click:
+[gmail-setup.mp4](https://cdn.paritydeals.com/inboxminder/gmail-setup.mp4).
+The written steps below match it exactly.
+
 ## Before you start
 
 - You need a Google account with Gmail: either a **Google Workspace**
