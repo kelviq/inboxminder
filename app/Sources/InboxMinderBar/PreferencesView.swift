@@ -270,10 +270,16 @@ struct PreferencesView: View {
                 Toggle(isOn: $store.doc.labels.enabled) {
                     Text("Pending and Resolved labels")
                     Text(
-                        "Reply-worthy threads carry Pending until your reply goes out"
+                        "Reply-worthy threads carry Pending; you mark them Resolved in Gmail when they're truly done"
                     )
                 }
                 if store.doc.labels.enabled {
+                    Toggle(isOn: $store.doc.labels.autoResolve) {
+                        Text("Resolve automatically when I reply")
+                        Text(
+                            "Off by default: replying isn't always done"
+                        )
+                    }
                     labelField("Pending", $store.doc.labels.pending)
                     labelField("Resolved", $store.doc.labels.resolved)
                 }

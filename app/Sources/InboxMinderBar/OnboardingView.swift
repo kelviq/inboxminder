@@ -465,16 +465,30 @@ struct OnboardingView: View {
             subtitle:
                 "This is the one step Google makes everyone do: reading mail is a restricted Gmail permission, so you connect through your own private Google app rather than a shared one. About five minutes, once."
         ) {
-            Link(
-                destination: URL(
-                    string:
-                        "https://github.com/kelviq/inboxminder/blob/main/docs/gmail-setup.md"
-                )!
-            ) {
-                HStack(spacing: 6) {
-                    Image(systemName: "book")
-                    Text("Open the step-by-step walkthrough")
-                    Image(systemName: "arrow.up.right").font(.caption2)
+            HStack(spacing: 18) {
+                Link(
+                    destination: URL(
+                        string:
+                            "https://cdn.paritydeals.com/inboxminder/gmail-setup.mp4"
+                    )!
+                ) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "play.circle")
+                        Text("Watch the video")
+                        Image(systemName: "arrow.up.right").font(.caption2)
+                    }
+                }
+                Link(
+                    destination: URL(
+                        string:
+                            "https://github.com/kelviq/inboxminder/blob/main/docs/gmail-setup.md"
+                    )!
+                ) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "book")
+                        Text("Step-by-step walkthrough")
+                        Image(systemName: "arrow.up.right").font(.caption2)
+                    }
                 }
             }
             .font(.callout.weight(.medium))

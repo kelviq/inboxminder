@@ -20,7 +20,8 @@ final class PreferencesTests: XCTestCase {
                     fyi: "InboxMinder/FYI",
                     important: "InboxMinder/Important")),
             labels: .init(
-                enabled: true, pending: "InboxMinder/Pending",
+                enabled: true, autoResolve: false,
+                pending: "InboxMinder/Pending",
                 resolved: "InboxMinder/Resolved"),
             instructions: .init(rules: [
                 .init(match: "@vip.example", note: "Always important.")
@@ -37,7 +38,7 @@ final class PreferencesTests: XCTestCase {
                 + "\"skipSenders\":[\"mailer-daemon\"],\"updateCheck\":true},"
                 + "\"instructions\":{\"rules\":[{\"match\":\"@vip.example\","
                 + "\"note\":\"Always important.\"}]},"
-                + "\"labels\":{\"enabled\":true,"
+                + "\"labels\":{\"autoResolve\":false,\"enabled\":true,"
                 + "\"pending\":\"InboxMinder/Pending\","
                 + "\"resolved\":\"InboxMinder/Resolved\"},"
                 + "\"llm\":{\"model\":\"claude-sonnet-5\","
@@ -70,7 +71,7 @@ final class PreferencesTests: XCTestCase {
                  "triage":{"enabled":true,"archive":[],"coldOutreachHint":"",
                   "labels":{"newsletter":"N","notification":"O","marketing":"M",
                    "cold-outreach":"C","fyi":"F","important":"I"}},
-                 "labels":{"enabled":true,"pending":"P","resolved":"R"},
+                 "labels":{"enabled":true,"autoResolve":false,"pending":"P","resolved":"R"},
                  "instructions":{"rules":[{"match":"a@b.c","note":"n"}]}}
                 """.utf8))
         XCTAssertEqual(decoded?.instructions.rules.first?.match, "a@b.c")

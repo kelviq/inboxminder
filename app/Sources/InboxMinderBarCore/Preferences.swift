@@ -83,11 +83,16 @@ public struct SettingsDoc: Codable, Equatable {
 
     public struct Labels: Codable, Equatable {
         public var enabled: Bool
+        public var autoResolve: Bool
         public var pending: String
         public var resolved: String
 
-        public init(enabled: Bool, pending: String, resolved: String) {
+        public init(
+            enabled: Bool, autoResolve: Bool, pending: String,
+            resolved: String
+        ) {
             self.enabled = enabled
+            self.autoResolve = autoResolve
             self.pending = pending
             self.resolved = resolved
         }

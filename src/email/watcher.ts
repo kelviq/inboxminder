@@ -106,7 +106,8 @@ export function labelColors(cfg: Config): Record<string, LabelColor> {
     [t["cold-outreach"]]: { background: "#e07798", text: "#ffffff" },
     [t.fyi]: { background: "#2da2bb", text: "#ffffff" },
     [t.important]: { background: "#ff7537", text: "#ffffff" },
-    [cfg.labels.pending]: { background: "#4a86e8", text: "#ffffff" },
+    // Red on purpose: Pending is the "needs you" state and reads urgent.
+    [cfg.labels.pending]: { background: "#fb4c2f", text: "#ffffff" },
     [cfg.labels.resolved]: { background: "#16a766", text: "#ffffff" },
   };
 }
@@ -217,8 +218,10 @@ export async function runWatchTick(cfg: Config): Promise<boolean> {
           // never be labeled Cold Outreach from here on.
           recordCorrespondents(toAddresses(msg.to));
         }
-        if (labelsOn) {
-          // Auto-resolve: the user sending their reply IS the resolution.
+        if (labelsOn && cfg.labels.autoResolve) {
+          // Opt-in auto-resolve: treat the user's reply as the
+          // resolution. Default is manual — replying is not the same as
+          // done, so the human swaps the labels when the thread truly is.
           // Fail-soft — labels never cost the tick.
           try {
             await mail.setThreadLabels?.(

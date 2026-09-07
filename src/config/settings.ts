@@ -43,6 +43,7 @@ export const SettingsSchema = z.object({
   }),
   labels: z.object({
     enabled: z.boolean(),
+    autoResolve: z.boolean(),
     pending: z.string().min(1),
     resolved: z.string().min(1),
   }),
@@ -76,6 +77,7 @@ export function settingsFromConfig(cfg: Config): SettingsDoc {
     },
     labels: {
       enabled: cfg.labels.enabled,
+      autoResolve: cfg.labels.autoResolve,
       pending: cfg.labels.pending,
       resolved: cfg.labels.resolved,
     },

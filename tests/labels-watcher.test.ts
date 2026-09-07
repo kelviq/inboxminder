@@ -35,13 +35,13 @@ beforeAll(async () => {
   state.setKV("gmail:selfEmail", SELF);
 });
 
-const labelsCfg = (enabled: boolean) =>
+const labelsCfg = (enabled: boolean, autoResolve?: boolean) =>
   ConfigSchema.parse({
     email: { notifications: false },
     // Isolate the [labels] feature: triage off so only Pending/Resolved
     // projections can produce label calls in these tests.
     triage: { enabled: false },
-    labels: { enabled },
+    labels: autoResolve === undefined ? { enabled } : { enabled, autoResolve },
   });
 
 const inbound = (id: string, threadId: string) => ({
@@ -78,6 +78,7 @@ describe("[labels] config", () => {
   it("defaults: enabled with the InboxMinder/* names", () => {
     expect(ConfigSchema.parse({}).labels).toEqual({
       enabled: true,
+      autoResolve: false,
       pending: "Pending",
       resolved: "Resolved",
     });
@@ -101,16 +102,23 @@ describe("thread-state label projection", () => {
     );
   });
 
-  it("own outbound reply -> Resolved added, Pending removed", async () => {
+  it("autoResolve on: own outbound reply -> Resolved added, Pending removed", async () => {
     pollMailHistory.mockResolvedValue({ inboxIds: [], sentIds: ["s1"] });
     getMessage.mockResolvedValue(outbound("s1", "t-label-2"));
-    await runWatchTick(labelsCfg(true));
+    await runWatchTick(labelsCfg(true, true));
     expect(setThreadLabels).toHaveBeenCalledWith(
       "t-label-2",
       ["Resolved"],
       ["Pending"],
       expect.anything(),
     );
+  });
+
+  it("default (manual resolve): own outbound reply flips NOTHING; resolving is the human's call", async () => {
+    pollMailHistory.mockResolvedValue({ inboxIds: [], sentIds: ["s1"] });
+    getMessage.mockResolvedValue(outbound("s1", "t-label-2"));
+    await runWatchTick(labelsCfg(true));
+    expect(setThreadLabels).not.toHaveBeenCalled();
   });
 
   it("labels enabled alone turns on sent observation", async () => {

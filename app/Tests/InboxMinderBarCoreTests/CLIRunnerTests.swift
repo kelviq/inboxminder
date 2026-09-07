@@ -71,7 +71,9 @@ final class CLIRunnerTests: XCTestCase {
                 labels: .init(
                     newsletter: "N", notification: "O", marketing: "M",
                     coldOutreach: "C", fyi: "F", important: "I")),
-            labels: .init(enabled: true, pending: "P", resolved: "R"),
+            labels: .init(
+                enabled: true, autoResolve: false, pending: "P",
+                resolved: "R"),
             instructions: .init(rules: []))
         var lines: [String] = []
         for invocation in [

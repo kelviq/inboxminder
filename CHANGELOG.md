@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.11.0 (2026-09-07)
+
+Resolving is yours now.
+
+- Behavior change: replying no longer auto-flips Pending to Resolved.
+  Replying is not the same as done, so you mark a thread Resolved in
+  Gmail yourself when it truly is; a new reply on that thread flips it
+  back to Pending automatically (and removes Resolved in the same
+  call). The old flip-on-reply behavior is one toggle away: Preferences
+  or `[labels] autoResolve = true`.
+- The Pending label is created red now, matching what it means: this
+  thread needs you. Existing labels keep whatever color they have
+  (colors apply only at creation; recolor in Gmail if you want the new
+  look).
+- The setup wizard's Connect Gmail step links the video walkthrough.
+
 ## 0.10.4 (2026-09-04)
 
 - The setup wizard gained a Back button next to Continue, completing

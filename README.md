@@ -18,7 +18,7 @@ A resident background agent polls your Gmail every 45 seconds. Each new email ge
 
 | Verdict | What happens |
 |---|---|
-| Needs a reply | `Pending`, flipping to `Resolved` the moment your reply goes out |
+| Needs a reply | `Pending`; you mark it `Resolved` in Gmail when it's truly done (auto-resolve on reply is a config option) |
 | Urgent or blocking | `Urgent` plus a macOS notification (subject only) |
 | Newsletter | `Newsletter` |
 | Automated notification | `Notification` |
@@ -152,6 +152,9 @@ important = "Urgent"
 
 [labels]
 enabled = true
+# Flip Pending to Resolved when your own reply is observed. Off by
+# default: replying is not the same as done, so resolving is yours.
+autoResolve = false
 pending = "Pending"
 resolved = "Resolved"
 ```

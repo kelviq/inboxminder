@@ -47,6 +47,7 @@ describe("settingsFromConfig", () => {
       },
       labels: {
         enabled: true,
+        autoResolve: false,
         pending: "Pending",
         resolved: "Resolved",
       },

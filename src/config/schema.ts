@@ -103,12 +103,18 @@ export const ConfigSchema = z.object({
     })
     .prefault({}),
   // Thread-state labels: Pending when a reply-worthy email arrives,
-  // Resolved when your own reply is observed, Pending again on the next
-  // reply-worthy inbound. Write-only projection — labels are never read
-  // back as state, so editing them by hand in Gmail is always safe.
+  // Pending again on the next reply-worthy inbound (Resolved removed in
+  // the same call). Resolving is a HUMAN act by default: you swap the
+  // labels in Gmail when the thread is truly done — replying is not the
+  // same as done (operator decision 2026-09-07, support-desk semantics).
+  // autoResolve=true restores the old flip-on-reply behavior. Write-only
+  // projection — labels are never read back as state, so hand-editing
+  // them in Gmail is always safe.
   labels: z
     .object({
       enabled: z.boolean().default(true),
+      // Flip Pending -> Resolved when your own reply is observed.
+      autoResolve: z.boolean().default(false),
       pending: labelName().default("Pending"),
       resolved: labelName().default("Resolved"),
     })
