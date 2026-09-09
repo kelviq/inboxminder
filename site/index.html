@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>InboxMinder: the gatekeeper for your inbox</title>
-<meta name="description" content="An open-source agent that scores every email as it arrives and sorts it with Gmail labels. Runs on your Mac with your own LLM key. Nothing is hosted, ever.">
+<title>InboxMinder: the assistant for your inbox</title>
+<meta name="description" content="An agent on your Mac that reads every email, sorts it with Gmail labels, and drafts the reply in your voice, grounded in your own docs. It never sends. Nothing is hosted, ever.">
 <link rel="canonical" href="https://inboxminder.com/">
 <meta name="theme-color" content="#171923">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -14,16 +14,16 @@
 <meta property="og:site_name" content="InboxMinder">
 <meta property="og:locale" content="en_US">
 <meta property="og:url" content="https://inboxminder.com/">
-<meta property="og:title" content="InboxMinder: the gatekeeper for your inbox">
-<meta property="og:description" content="An open-source agent that scores every email as it arrives and sorts it with Gmail labels. Runs on your Mac with your own AI key. Nothing is hosted, ever.">
+<meta property="og:title" content="InboxMinder: the assistant for your inbox">
+<meta property="og:description" content="An agent on your Mac that reads every email, sorts it with labels, and drafts the reply in your voice. It never sends. Nothing is hosted, ever.">
 <meta property="og:image" content="https://inboxminder.com/assets/og-cover.png">
 <meta property="og:image:width" content="5120">
 <meta property="og:image:height" content="2880">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:alt" content="InboxMinder: the gatekeeper for your inbox. Gmail label chips: Urgent, Pending, Newsletter, Cold Outreach, FYI.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="InboxMinder: the gatekeeper for your inbox">
-<meta name="twitter:description" content="An open-source agent that scores every email as it arrives and sorts it with Gmail labels. Runs on your Mac with your own AI key. Nothing is hosted, ever.">
+<meta name="twitter:title" content="InboxMinder: the assistant for your inbox">
+<meta name="twitter:description" content="An agent on your Mac that reads every email, sorts it with labels, and drafts the reply in your voice. It never sends. Nothing is hosted, ever.">
 <meta name="twitter:image" content="https://inboxminder.com/assets/og-cover.png">
 <meta name="twitter:image:alt" content="InboxMinder: the gatekeeper for your inbox. Gmail label chips: Urgent, Pending, Newsletter, Cold Outreach, FYI.">
 <link rel="preload" href="fonts/Inter-var.woff2" as="font" type="font/woff2" crossorigin>
@@ -357,18 +357,18 @@ footer{border-top:1px solid var(--dark-line)}
 <section class="wrap hero">
   <div class="hero-copy">
     <div class="badges">
-      <span class="badge badge-accent">open source</span>
-      <span class="badge badge-plain">runs on your Mac</span>
+      <span class="badge badge-accent">runs on your Mac</span>
+      <span class="badge badge-plain">open-source core</span>
     </div>
-    <h1>The <span class="serif">gatekeeper</span> for your inbox.</h1>
-    <p class="hero-sub">An open-source agent that scores every email as it arrives: needs a reply, urgent, or just noise. It runs on your Mac, with your own LLM key, and sorts everything with Gmail labels. Nothing is hosted, ever.</p>
+    <h1>Your inbox, <span class="serif">answered</span>.</h1>
+    <p class="hero-sub">An agent that runs on your Mac and reads every email as it arrives: the noise gets sorted with Gmail labels, and the mail that needs you gets a reply drafted in your voice, grounded in your own docs, waiting in the thread. It never sends. You always hit send.</p>
     <div class="cta-row">
-      <a class="btn btn-primary" href="https://github.com/kelviq/inboxminder/releases/latest/download/InboxMinder.dmg">
+      <a class="btn btn-primary" href="https://github.com/kelviq/inboxminder-pro-releases/releases/latest/download/InboxMinderPro.dmg">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg>
         Download for Mac
       </a>
     </div>
-    <p class="facts">v0.11.0 · macOS 13+ · Apple Silicon</p>
+    <p class="facts">v0.1.0 · macOS 13+ · Apple Silicon</p>
   </div>
 
   <figure class="gmail" aria-hidden="true">
@@ -390,7 +390,7 @@ footer{border-top:1px solid var(--dark-line)}
     <div class="gm-row unread">
       <span class="gm-cb"></span>
       <svg class="star" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bdc1c6" stroke-width="1.8"><path d="M12 3l2.7 5.8 6.3.7-4.7 4.3 1.3 6.2-5.6-3.2-5.6 3.2 1.3-6.2L3 9.5l6.3-.7z"/></svg>
-      <span class="gm-from">Sarah Chen</span>
+      <span class="gm-from">Sarah Chen, <span style="color:#d93025;font-weight:400">Draft</span></span>
       <span class="gm-mid">
         <span class="chip" style="background:#ff7537;color:#fff">Urgent</span>
         <span class="chip" style="background:#4a86e8;color:#fff">Pending</span>
@@ -441,7 +441,7 @@ footer{border-top:1px solid var(--dark-line)}
     <div class="gm-row unread">
       <span class="gm-cb"></span>
       <svg class="star" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bdc1c6" stroke-width="1.8"><path d="M12 3l2.7 5.8 6.3.7-4.7 4.3 1.3 6.2-5.6-3.2-5.6 3.2 1.3-6.2L3 9.5l6.3-.7z"/></svg>
-      <span class="gm-from">Maya Patel</span>
+      <span class="gm-from">Maya Patel, <span style="color:#d93025;font-weight:400">Draft</span></span>
       <span class="gm-mid">
         <span class="chip" style="background:#4a86e8;color:#fff">Pending</span>
         <span class="gm-subj"><b>Re: onboarding call follow-up</b> <span style="color:#5f6368">&#8211; Sounds good, does Thursda&#8230;</span></span>
@@ -466,17 +466,17 @@ footer{border-top:1px solid var(--dark-line)}
   <div class="wrap noise">
     <div class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <p class="h2">You got 127 emails today. <span class="accent serif" style="white-space:nowrap">Six deserved you.</span></p>
-    <p>The other 121 still demanded a glance, a judgment, a decision, one by one. That's the job InboxMinder takes.</p>
+    <p>The other 121 still demanded a glance, a judgment, a decision, one by one. That's the job InboxMinder takes. And for the six: the replies are already drafted.</p>
   </div>
 </div>
 
 <section class="wrap section" id="how">
   <div class="section-head">
     <p class="kicker">How it works</p>
-    <h2 class="h2">Watch. Judge. Label. Repeat.</h2>
+    <h2 class="h2">Watch. Judge. Label. Draft.</h2>
     <p class="section-sub">A tiny pipeline that runs every 45 seconds, forever.</p>
   </div>
-  <div class="grid-3 pipeline">
+  <div class="grid-4 pipeline">
     <div class="card">
       <span class="how-ico"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></span>
       <h3>It watches</h3>
@@ -491,6 +491,11 @@ footer{border-top:1px solid var(--dark-line)}
       <span class="how-ico"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12l-8.5 8.5a2 2 0 0 1-2.8 0L3 14.8a2 2 0 0 1 0-2.8L11.5 3.5H18a2 2 0 0 1 2 2z"/><circle cx="15.5" cy="8.5" r="1.2"/></svg></span>
       <h3>It labels</h3>
       <p>The verdict becomes a pre-colored Gmail label, on web and mobile, searchable and pinnable. Every decision is visible and one click to undo.</p>
+    </div>
+    <div class="card">
+      <span class="how-ico"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16"/><path d="M6 16l8.5-8.5a2.1 2.1 0 0 1 3 3L9 19l-4 1z"/></svg></span>
+      <h3>It drafts</h3>
+      <p>Reply-worthy mail gets a draft inside the thread: your voice, learned from your sent mail; your facts, retrieved from your own docs. Never sent, only drafted.</p>
     </div>
   </div>
 </section>
@@ -540,10 +545,11 @@ footer{border-top:1px solid var(--dark-line)}
         <div class="t-d"><span class="t-g">&#9670;</span> Gmail OAuth client <span class="t-l">guided, one time</span> <span class="t-g">&#10003;</span></div>
         <div>&nbsp;</div>
         <div><span class="t-p">$</span><span class="t-w"> inboxminder up</span></div>
-        <div class="t-d">Step 1/2: Gmail authorization <span class="t-g">&#10003;</span></div>
-        <div class="t-d">Step 2/2: Installing the background agent <span class="t-g">&#10003;</span></div>
+        <div class="t-d">Step 1/3: Gmail authorization <span class="t-g">&#10003;</span></div>
+        <div class="t-d">Step 2/3: Building your local knowledge index <span class="t-g">&#10003;</span></div>
+        <div class="t-d">Step 3/3: Installing the background agent <span class="t-g">&#10003;</span></div>
         <div>&nbsp;</div>
-        <div class="t-g">Gatekeeper installed: minding your inbox</div>
+        <div class="t-g">Agent installed: minding your inbox</div>
         <div class="t-m">Prefer clicking? The Mac app runs the same steps.</div>
       </div>
     </figure>
@@ -575,8 +581,8 @@ footer{border-top:1px solid var(--dark-line)}
   <section class="wrap section">
     <div class="section-head">
       <p class="kicker">What it does</p>
-      <h2 class="h2">Every email, read and sorted.</h2>
-      <p class="section-sub">All of it in the free gatekeeper. Every behavior below is a config knob or a Preferences toggle.</p>
+      <h2 class="h2">Read, sorted, answered.</h2>
+      <p class="section-sub">The gatekeeper below ships in the open-source core too. Every behavior is a config knob or a Preferences toggle.</p>
     </div>
     <div class="grid-4">
       <div class="card card-feature">
@@ -611,13 +617,13 @@ footer{border-top:1px solid var(--dark-line)}
       </div>
       <div class="card card-feature">
         <span class="f-ico"><svg class="icon-accent" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16"/><path d="M6 16l8.5-8.5a2.1 2.1 0 0 1 3 3L9 19l-4 1z"/></svg></span>
-        <h3>Every label is yours</h3>
-        <p>Rename or recolor any label from config or Preferences. Labels are write-only; hand-edit them freely.</p>
+        <h3>Drafts in your voice</h3>
+        <p>Learned from your own sent mail, grounded in your notes, docs sites, Notion, Linear, and Slack.</p>
       </div>
       <div class="card card-feature">
         <span class="f-ico"><svg class="icon-accent" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
-        <h3>One call per email</h3>
-        <p>One LLM call per email on your own key, typically a few cents a day. Zero with a local model.</p>
+        <h3>Follow-ups and cleanup</h3>
+        <p>Quiet threads get a nudge drafted. Reply from your phone and the stale draft deletes itself.</p>
       </div>
     </div>
   </section>
@@ -639,7 +645,7 @@ footer{border-top:1px solid var(--dark-line)}
     </div>
     <div class="card compare-hi">
       <div class="cmp-head"><span class="cmp-ico"><svg width="16" height="16" viewBox="0 0 147 145" aria-hidden="true"><use href="#im-leaf"/></svg></span><h3>InboxMinder</h3></div>
-      <p>Real judgment, run locally. Open source, your own key, five guided setup minutes as the price of nobody else ever touching your mail.</p>
+      <p>Real judgment and real drafts, run locally. Open-source core, your own key, five guided setup minutes as the price of nobody else ever touching your mail.</p>
     </div>
   </div>
 </section>
@@ -771,8 +777,8 @@ footer{border-top:1px solid var(--dark-line)}
       <p>IMAP and Outlook support, so any mailbox gets a gatekeeper.</p>
     </div>
     <div class="open-card">
-      <div class="head"><h3>The v2 assistant</h3><span class="plan-tag">V2</span></div>
-      <p>Replies drafted in your voice, grounded in your docs: the assistant our own inbox already runs on.</p>
+      <div class="head"><h3>The assistant</h3><span class="plan-tag" style="background:var(--accent);color:#fff">SHIPPED</span></div>
+      <p>Replies drafted in your voice, grounded in your docs: the assistant our own inbox runs on is the app you can download above.</p>
     </div>
   </div>
 </section>
@@ -786,7 +792,7 @@ footer{border-top:1px solid var(--dark-line)}
     <div class="why-prose">
       <p>We're a small team at <a href="https://www.kelviq.com">Kelviq</a>, and Gmail is our customer support desk. We built InboxMinder to make that job easier, and it now runs our inbox end to end.</p>
       <p>The full version does virtually everything a support person would: it drafts replies exactly the way we'd write them, categorizes every email, scores urgency and notifies us when something can't wait, and reminds us when a thread needs a follow-up.</p>
-      <p>That version is still tightly coupled to our internal workflow, so we're opening it up in stages. The gatekeeper you can download today is the first cut, and it stays free forever. The assistant is what's coming next.</p>
+      <p>That version is now the app you can download. The gatekeeper core stays open source, free to build and run forever — the assistant on top is what we sell, and it's how this stays maintained.</p>
       <p class="why-sign"><svg viewBox="0 0 147 145" aria-hidden="true"><use href="#im-leaf"/></svg><span>Built in the open by <a href="https://www.kelviq.com">Kelviq</a></span></p>
     </div>
   </div>
@@ -795,41 +801,44 @@ footer{border-top:1px solid var(--dark-line)}
 <div style="border-top:1px solid var(--line)">
   <section class="wrap section" id="pricing">
     <div class="pricing-head">
-      <h2 class="h2">Free forever. v2 is coming.</h2>
-      <p>Features never move from free to paid. That is the promise.</p>
+      <h2 class="h2">One app. An open core.</h2>
+      <p>The gatekeeper stays open source forever; nothing ever moves from free to paid. The assistant is the product.</p>
     </div>
     <div class="grid-2">
-      <div class="price-card">
-        <h3>The Gatekeeper</h3>
-        <p class="price">Free <small>forever · open source</small></p>
-        <p class="price-desc">The full triage agent. Every email read locally, judged once, and sorted with Gmail labels.</p>
+      <div class="price-card pro-card">
+        <span class="pro-tag">EARLY ACCESS</span>
+        <h3>InboxMinder</h3>
+        <p class="price">The assistant <small>· everything below</small></p>
+        <p class="price-desc">The full agent our own support inbox runs on. Still local. Still yours. It never sends.</p>
         <ul class="price-list">
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Five triage categories, pre-colored labels</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Important tier with quiet notifications</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Opt-in archiving with audit trail</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Cold-outreach guard and per-sender rules</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Menu-bar app with full Preferences</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Signed, notarized, auto-updating</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Reply drafts written in your voice, in the thread</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Answers grounded in your docs and past mail</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Integrations: Notion, Linear, Slack, GitHub, docs sites</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Follow-up drafts when a thread goes quiet</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Learns your voice from every edit you make</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>The whole gatekeeper, on by default</li>
         </ul>
-        <a class="price-cta" href="https://github.com/kelviq/inboxminder/releases/latest/download/InboxMinder.dmg">
+        <a class="price-cta" style="background:var(--accent);color:#fff" href="https://github.com/kelviq/inboxminder-pro-releases/releases/latest/download/InboxMinderPro.dmg">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg>
           Download for Mac
         </a>
       </div>
-      <div class="price-card pro-card">
-        <span class="pro-tag">COMING</span>
-        <h3>InboxMinder v2</h3>
-        <p class="price">The assistant tier</p>
-        <p class="price-desc">Everything our internal version already does for our own support inbox. Still local. Still yours.</p>
+      <div class="price-card">
+        <h3>The open-source core</h3>
+        <p class="price">Free <small>forever · AGPL-3.0</small></p>
+        <p class="price-desc">The full gatekeeper. Every email read locally, judged once, and sorted with Gmail labels.</p>
         <ul class="price-list">
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Reply drafts written in your voice</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Answers grounded in your docs and past mail</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Integrations: Notion, Linear, and Slack</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Follow-up reminders when a thread goes quiet</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Learns your voice from every edit you make</li>
-          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Everything in the free Gatekeeper</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Five triage categories, pre-colored labels</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Urgent tier with quiet notifications</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Opt-in archiving with audit trail</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Cold-outreach guard and per-sender rules</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Read the code; build it yourself</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>Signed free build available</li>
         </ul>
-        <a class="price-cta" style="background:var(--accent);color:#fff" href="https://forms.gle/aXRjMaRQk1S7UdRd6">Get notified at launch</a>
+        <a class="price-cta" href="https://github.com/kelviq/inboxminder/releases/latest/download/InboxMinder.dmg">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg>
+          Download the free gatekeeper
+        </a>
       </div>
     </div>
   </section>
@@ -843,11 +852,11 @@ footer{border-top:1px solid var(--dark-line)}
   <div class="faq-grid">
     <div>
       <h3>Does it ever send or delete anything?</h3>
-      <p>No, structurally: there is no code path that sends, deletes, or marks spam. It writes labels and, only if you opt in per category, moves junk out of the inbox with the label kept as the audit trail.</p>
+      <p>No, structurally: there is no code path that sends, deletes, or marks spam. It writes labels and unsent drafts — you are always the one who hits send — and, only if you opt in per category, moves junk out of the inbox with the label kept as the audit trail.</p>
     </div>
     <div>
       <h3>What does it cost to run?</h3>
-      <p>One LLM call per email on your own key, typically a few cents a day at founder-inbox volume. With a local model via Ollama: nothing.</p>
+      <p>Your own key: one classifier call per email, plus a drafting call for the mail that needs you. Typically well under a dollar a day at founder-inbox volume; with a local model via Ollama, nothing.</p>
     </div>
     <div>
       <h3>Which LLMs work?</h3>
@@ -862,8 +871,8 @@ footer{border-top:1px solid var(--dark-line)}
       <p>The Mac app updates itself: signed builds, consent-based, never silent. The CLI updates through npm and only ever notifies you when a new version exists.</p>
     </div>
     <div>
-      <h3>Can I fork it?</h3>
-      <p>Yes, the AGPL-3.0 license guarantees it. Just rename your fork (the InboxMinder name and logo stay with the project) and keep it open source.</p>
+      <h3>Is it open source?</h3>
+      <p>The gatekeeper core is, AGPL-3.0, and the fork right is guaranteed (rename yours; the name and logo stay with the project). The assistant on top is commercial — that's what keeps the core maintained.</p>
     </div>
   </div>
 </section>
@@ -873,13 +882,13 @@ footer{border-top:1px solid var(--dark-line)}
     <svg class="logo-leaf" viewBox="0 0 147 145" aria-hidden="true"><use href="#im-leaf"/></svg>
     <p class="h2">Give your inbox a <span class="serif">minder</span>.</p>
     <div class="cta-row" style="justify-content:center">
-      <a class="btn btn-primary" href="https://github.com/kelviq/inboxminder/releases/latest/download/InboxMinder.dmg">
+      <a class="btn btn-primary" href="https://github.com/kelviq/inboxminder-pro-releases/releases/latest/download/InboxMinderPro.dmg">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg>
         Download for Mac
       </a>
-      <a class="btn btn-ghost" href="https://github.com/kelviq/inboxminder">Star on GitHub</a>
+      <a class="btn btn-ghost" href="https://github.com/kelviq/inboxminder">Star the core on GitHub</a>
     </div>
-    <p class="closing-note">Free and open source · Signed and notarized · Apple Silicon</p>
+    <p class="closing-note">Never sends · Open-source core · Signed and notarized · Apple Silicon</p>
   </div>
 </div>
 </main>
