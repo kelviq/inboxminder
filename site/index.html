@@ -1307,9 +1307,17 @@ code { font-family: var(--font-mono); }
         var s = document.querySelector('.sc');
         if (!s || !('IntersectionObserver' in window)) return;
         s.classList.add('is-armed');
+        // Plays once most of the screen is on show: 75% of it, or (when it is
+        // taller than the window) once it fills 75% of the window.
+        var steps = [];
+        for (var i = 0; i <= 20; i++) steps.push(i / 20);
         var io = new IntersectionObserver(function (es) {
-            if (es.some(function (e) { return e.isIntersecting; })) { s.classList.add('is-in'); io.disconnect(); }
-        }, { threshold: 0.3 });
+            var seen = es.some(function (e) {
+                var vh = e.rootBounds ? e.rootBounds.height : window.innerHeight;
+                return e.isIntersecting && (e.intersectionRatio >= 0.75 || e.intersectionRect.height >= vh * 0.75);
+            });
+            if (seen) { s.classList.add('is-in'); io.disconnect(); }
+        }, { threshold: steps });
         io.observe(s);
     })();
     </script>
